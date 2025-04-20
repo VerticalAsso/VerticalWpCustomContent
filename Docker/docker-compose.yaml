@@ -1,0 +1,27 @@
+version: '3.8'
+
+services:
+  wordpress:
+    image: vertical-wordpress:latest
+    ports:
+      - "8080:80"
+    environment:
+      WORDPRESS_DB_HOST: db:3306
+      WORDPRESS_DB_USER: test
+      WORDPRESS_DB_PASSWORD: test
+      WORDPRESS_DB_NAME: verticalws34
+    depends_on:
+      - db
+
+  db:
+    image: vertical-database:latest
+    environment:
+      MARIADB_ROOT_PASSWORD: rootpassword
+      MARIADB_DATABASE: verticalws34
+      MARIADB_USER: test
+      MARIADB_PASSWORD: test
+    volumes:
+      - db_data:/var/lib/mysql
+
+volumes:
+  db_data:
