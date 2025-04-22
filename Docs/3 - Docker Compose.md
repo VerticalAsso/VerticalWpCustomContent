@@ -6,8 +6,30 @@ Using docker compose allows us to build a full virtual environment where the web
 It uses its internal network in order to connect all services.
 Still, some ports are mapped to the host system, so that it is possible to edit the database from outside the container.
 
-# Procedure to start up :
+# Prerequisite : grabbing backups !
+Download (and extract) the backups in the [BackedUpContent](../BackedUpContent) folder.
+The structure should look like this :
+* wp-content
+* database-dump.sql
+* wp-config.php
 
+## Modifications to do to the wp-config (this file should ne be committed)
+```php
+define('DB_NAME', 'verticalws34');
+define('DB_USER', 'test');
+define('DB_PASSWORD', 'test');
+define('DB_HOST', 'db:3306');
+define('FS_METHOD', 'direct');
+
+define('WP_DEBUG', true);
+define('WP_DEBUG_LOG', true);
+define('WP_DEBUG_DISPLAY', false);
+```
+> Note : this config will only be used for local development.
+> The database will see some changes that will also need to be reverted (`siteurl` and `home` properties will be rewritten)
+> It should only serve as a migration base
+
+# Procedure to start up :
 1. Build docker images and start the virtual environment
 ```sh
 docker build -f Docker/MariaDb.Dockerfile -t vertical-database .
