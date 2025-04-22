@@ -1,6 +1,6 @@
 <?php
 // [map]
-function shortcode_map($atts, $content=null, $code) {
+function shortcode_map($atts, $code, $content=null) {
 
     $mapsrandomid = rand();
 	extract(shortcode_atts(array(

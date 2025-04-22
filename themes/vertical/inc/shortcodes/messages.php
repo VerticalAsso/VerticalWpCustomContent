@@ -11,10 +11,10 @@ function message_box($atts, $content = null) {
 
 	$background = "";
    $background_color = "";
-    if (strpos($bg,'http://') !== false) {
+    if (str_contains((string) $bg,'http://')) {
       $background = $bg;
     }
-    elseif (strpos($bg,'#') !== false) {
+    elseif (str_contains((string) $bg,'#')) {
       $background_color = 'background-color:'.$bg.'!important';
     }
      else {

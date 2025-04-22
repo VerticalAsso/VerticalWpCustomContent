@@ -107,7 +107,7 @@ function ux_logo( $atts, $content = null ){
     'height' => '50px',
   ), $atts ) );
 
-    if (strpos($img,'http://') !== false || strpos($img,'https://') !== false) {
+    if (str_contains((string) $img,'http://') || str_contains((string) $img,'https://')) {
       $img = $img;
     }
     else {

@@ -25,7 +25,7 @@ $output_categories = array();
 $output_categories["All"] = "";
 
 foreach($categories as $category){
-  $output_categories[htmlspecialchars_decode($category->name)] = $category->slug;
+  $output_categories[htmlspecialchars_decode((string) $category->name)] = $category->slug;
 }
 
 // margin
@@ -683,7 +683,7 @@ $options = array(
       "param_name" => "image_height",
       "value" => '200px'
     ),
-    
+
     array(
       "type" => "textfield",
       "class" => "",
@@ -896,7 +896,7 @@ $options = array(
       "param_name" => "animated",
       "value" => $ux_animate
       ),
-      
+
 
     // end params
    );
@@ -1301,7 +1301,7 @@ $options = array(
     )
 );
 break;
-   
+
 case 'products_pinterest_style':
 $options = array(
     array(
@@ -1613,7 +1613,7 @@ $options = array(
         "Normal" => "normal",
         "Center" => "center",
         "Pill Style" => "pills",
-  
+
       )
       ),
       array(
@@ -1651,7 +1651,7 @@ break;
 
 case 'team_member':
 $options = array(
-     
+
       array(
       "type" => "textfield",
       "heading" => "Name",
@@ -1728,7 +1728,7 @@ break;
 case 'testimonial':
 
 $options = array(
-     
+
       array(
       "type" => "textfield",
       "heading" => "Name",
@@ -1802,7 +1802,7 @@ $options = array(
       "param_name" => "link",
       "value" => ""
       ),
- 
+
 );
 
 break;

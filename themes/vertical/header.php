@@ -368,7 +368,7 @@ if($flatsome_opt['html_intro'] && is_front_page()) echo '<div class="home-intro"
 <div id="main-content" class="site-main  <?php echo $flatsome_opt['content_color']; ?>">
 <?php 
 //adds a border line if header is white
-if (strpos($flatsome_opt['header_bg'],'#fff') !== false && $flatsome_opt['nav_position'] == 'top') {
+if (str_contains((string) $flatsome_opt['header_bg'],'#fff') && $flatsome_opt['nav_position'] == 'top') {
 		  echo '<div class="row"><div class="large-12 columns"><div class="top-divider"></div></div></div>';
 } ?>
 

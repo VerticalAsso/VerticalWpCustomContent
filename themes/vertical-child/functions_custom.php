@@ -5,9 +5,9 @@
 	register_nav_menus( array(
 		'secondary' => __( 'Secondary Menu', 'flatsome' ),
 	) );
-	
+
 	add_action( 'after_setup_theme', 'flatsome_setup' );
-	
+
 // We might use this approach if a standard PHP date format doesn't
 // quite match what we want. Example: "Sept" for September (neither
 // "F" or "M"  formats get us there).
@@ -33,7 +33,9 @@ function change_minical_title_month_format($title) {
 
 remove_action("wp_head", "wp_generator");
 
-add_filter('login_errors',create_function('$a', "return null;"));
+add_filter('login_errors', function ($a) {
+    return null;
+});
 
 add_filter("um_email_template_body_attrs", function( $css_atts ){
 	return 'style="background: #fff;-webkit-font-smoothing: antialiased;-moz-osx-font-smoothing: grayscale;"';

@@ -67,7 +67,7 @@ function of_get_header_classes_array()
 	foreach ($of_options as $value) 
 	{
 		if ($value['type'] == 'heading')
-			$hooks[] = str_replace(' ','',strtolower($value['name']));	
+			$hooks[] = str_replace(' ','',strtolower((string) $value['name']));	
 	}
 	
 	return $hooks;

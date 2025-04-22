@@ -12,14 +12,20 @@ function recent_posts_widget() {
  * @since 2.8.0
  */
 class Flatsome_Recent_Post_Widget extends WP_Widget {
-	
-	function Flatsome_Recent_Post_Widget() {
-		$widget_ops = array( 'classname' => 'flatsome_recent_posts', 'description' => __('A widget that displays recent posts ', 'flatsome') );
-		
-		$control_ops = array( 'width' => 300, 'height' => 350, 'id_base' => 'flatsome_recent_posts' );
-		
-		$this->WP_Widget( 'flatsome_recent_posts', __('Flatsome Recent Posts', 'flatsome'), $widget_ops, $control_ops );
-	}
+
+	 // Updated constructor
+	 public function __construct() {
+        $widget_ops = array(
+            'classname' => 'flatsome_recent_posts',
+            'description' => __('A widget that displays recent posts', 'flatsome'),
+        );
+
+        parent::__construct(
+            'flatsome_recent_posts', // Base ID
+            __('Flatsome Recent Posts', 'flatsome'), // Name
+            $widget_ops // Widget options
+        );
+    }
 
 	function widget($args, $instance) {
 		$cache = wp_cache_get('widget_recent_posts', 'widget');
@@ -54,7 +60,7 @@ class Flatsome_Recent_Post_Widget extends WP_Widget {
 	                    <span class="post-date-day"><?php echo get_the_time('d'); ?></span>
 	                    <span class="post-date-month"><?php echo get_the_time('M'); ?></span>
                 </div>
-         
+
                 <a href="<?php the_permalink() ?>" title="<?php echo esc_attr( get_the_title() ? get_the_title() : get_the_ID() ); ?>"><?php if ( get_the_title() ) the_title(); else the_ID(); ?></a>
 				<div class="post_comments"><?php comments_popup_link( __( 'Leave a comment', 'flatsome' ), __( '<strong>1</strong> Comment', 'flatsome' ), __( '<strong>%</strong> Comments', 'flatsome' ) ); ?></div>
             </li>
@@ -73,7 +79,7 @@ class Flatsome_Recent_Post_Widget extends WP_Widget {
 
 	function update( $new_instance, $old_instance ) {
 		$instance = $old_instance;
-		$instance['title'] = strip_tags($new_instance['title']);
+		$instance['title'] = strip_tags((string) $new_instance['title']);
 		$instance['number'] = (int) $new_instance['number'];
 		$this->flush_widget_cache();
 

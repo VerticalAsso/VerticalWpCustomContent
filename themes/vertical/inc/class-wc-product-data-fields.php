@@ -29,7 +29,7 @@ if(!class_exists('WC_Product_Data_Fields')){
 				WC_Product_Data_Fields::$plugin_basefile = plugin_basename(__FILE__);
 				WC_Product_Data_Fields::$plugin_url = plugin_dir_url(WC_Product_Data_Fields::$plugin_basefile);
 				WC_Product_Data_Fields::$plugin_path = trailingslashit(dirname(__FILE__));
-				add_action('woocommerce_init', array(&$this, 'init'));
+				add_action('woocommerce_init', $this->init(...));
 			}
 
 
@@ -54,9 +54,9 @@ if(!class_exists('WC_Product_Data_Fields')){
 			 */
 			public function init(){
 
-				add_action('woocommerce_product_write_panel_tabs', array($this, 'product_write_panel_tab'));
-				add_action('woocommerce_product_write_panels', array($this, 'product_write_panel'));
-				add_action('woocommerce_process_product_meta', array($this, 'product_save_data'), 10, 2);
+				add_action('woocommerce_product_write_panel_tabs', $this->product_write_panel_tab(...));
+				add_action('woocommerce_product_write_panels', $this->product_write_panel(...));
+				add_action('woocommerce_process_product_meta', $this->product_save_data(...), 10, 2);
 
 
 			}
@@ -337,7 +337,7 @@ if(!class_exists('WC_Product_Data_Fields')){
 
           foreach(wc_custom_product_data_fields() as $data){
             if(isset($data['id'])){
-              $data_args[$data['id']] = stripslashes($_POST[$data['id']]);
+              $data_args[$data['id']] = stripslashes((string) $_POST[$data['id']]);
             }
           }
 

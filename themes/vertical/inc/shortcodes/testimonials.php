@@ -9,10 +9,10 @@ function shortcode_testimonial($params = array(), $content = null) {
 		"company" => '',
 		"stars" => '',
 	), $params));
-	$content = preg_replace('#<br\s*/?>#', "", $content);
+	$content = preg_replace('#<br\s*/?>#', "", (string) $content);
 
 
-    if (strpos($image,'http://') !== false || strpos($image,'https://') !== false) {
+    if (str_contains((string) $image,'http://') || str_contains((string) $image,'https://')) {
       $image = $image;
     }
      else {

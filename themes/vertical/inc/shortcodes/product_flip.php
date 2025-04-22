@@ -16,7 +16,7 @@ function ux_product_flip($atts, $content = null) {
 	), $atts));
 	ob_start();
 
- if(!strpos($height,'px') !== false) { $height = $height.'px';}
+ if(!strpos((string) $height,'px') !== false) { $height = $height.'px';}
 
    $args = array(
             'post_type' => 'product',

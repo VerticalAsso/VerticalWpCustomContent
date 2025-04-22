@@ -198,7 +198,7 @@ class FlatsomeNavDropdown extends Walker_Nav_Menu
     }
 
     $description = '';
-    if(strpos($class_names,'image-column') !== false){$description = '<img src="'.$item->description.'" alt=" "/>';}
+    if(str_contains($class_names,'image-column')){$description = '<img src="'.$item->description.'" alt=" "/>';}
 
     $item_output = $args->before;
     $item_output .= '<a'. $attributes .'>';
@@ -419,11 +419,11 @@ function get_adjacent_post_product( $in_same_cat = false, $excluded_categories =
         if ( ! empty( $excluded_categories ) ) {
             if ( ! is_array( $excluded_categories ) ) {
                 // back-compat, $excluded_categories used to be IDs separated by " and "
-                if ( strpos( $excluded_categories, ' and ' ) !== false ) {
+                if ( str_contains( (string) $excluded_categories, ' and ' ) ) {
                     _deprecated_argument( __FUNCTION__, '3.3', sprintf( __( 'Use commas instead of %s to separate excluded categories.', 'flatsome'), "'and'" ) );
-                    $excluded_categories = explode( ' and ', $excluded_categories );
+                    $excluded_categories = explode( ' and ', (string) $excluded_categories );
                 } else {
-                    $excluded_categories = explode( ',', $excluded_categories );
+                    $excluded_categories = explode( ',', (string) $excluded_categories );
                 }
             }
 
@@ -435,7 +435,7 @@ function get_adjacent_post_product( $in_same_cat = false, $excluded_categories =
             }
 
             if ( !empty($excluded_categories) ) {
-                $posts_in_ex_cats_sql = " AND tt.taxonomy = 'product_cat' AND tt.term_id NOT IN (" . implode($excluded_categories, ',') . ')';
+                $posts_in_ex_cats_sql = " AND tt.taxonomy = 'product_cat' AND tt.term_id NOT IN (" . implode(',', $excluded_categories) . ')';
             }
         }
     }
@@ -486,7 +486,7 @@ add_action('wp_ajax_jck_quickview', 'jck_quickview');
 add_action('wp_ajax_nopriv_jck_quickview', 'jck_quickview');
 
 /** The Quickview Ajax Output **/
-function jck_quickview() {
+function jck_quickview(): never {
     global $post, $product, $woocommerce;
     $prod_id =  $_POST["product"];
     $post = get_post($prod_id);

@@ -29,10 +29,10 @@ extract( shortcode_atts( array(
 
     if($padding){ $padding_row = 'padding:'.$padding.' 0;';}
 
-    if (strpos($bg,'http://') !== false || strpos($bg,'https://') !== false) {
+    if (str_contains((string) $bg,'http://') || str_contains((string) $bg,'https://')) {
       $background = $bg;
     }
-    elseif (strpos($bg,'#') !== false) {
+    elseif (str_contains((string) $bg,'#')) {
       $background_color = 'background-color:'.$bg.'!important;';
     }
 

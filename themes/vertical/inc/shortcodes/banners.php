@@ -57,10 +57,10 @@ function uxbannerShortcode( $atts, $content = null ){
    if($bg_color) $bg_color = ' background-color:'.$bg_color;
 
    $background = "";
-    if (strpos($bg,'http://') !== false || strpos($bg,'https://') !== false) {
+    if (str_contains((string) $bg,'http://') || str_contains((string) $bg,'https://')) {
       $background = $bg;
     }
-    elseif (strpos($bg,'#') !== false) {
+    elseif (str_contains((string) $bg,'#')) {
       $bg_color = ' background-color:'.$bg.'!important';
     }
      else {

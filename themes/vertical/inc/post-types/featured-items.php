@@ -16,27 +16,27 @@ class Featured_Item_Post_Type {
 
 	public function __construct() {
 	// Run when the plugin is activated
-		register_activation_hook( __FILE__, array( $this, 'plugin_activation' ) );
+		register_activation_hook( __FILE__, $this->plugin_activation(...) );
 
 		// Add the featured_item post type and taxonomies
-		add_action( 'init', array( $this, 'featured_item_init' ) );
+		add_action( 'init', $this->featured_item_init(...) );
 
 		// Thumbnail support for featured_item posts
 		add_theme_support( 'post-thumbnails', array( 'featured_item' ) );
 
 		// Add thumbnails to column view
-		add_filter( 'manage_edit-featured_item_columns', array( $this, 'add_thumbnail_column'), 10, 1 );
-		add_action( 'manage_posts_custom_column', array( $this, 'display_thumbnail' ), 10, 1 );
+		add_filter( 'manage_edit-featured_item_columns', $this->add_thumbnail_column(...), 10, 1 );
+		add_action( 'manage_posts_custom_column', $this->display_thumbnail(...), 10, 1 );
 
 		// Allow filtering of posts by taxonomy in the admin view
-		add_action( 'restrict_manage_posts', array( $this, 'add_taxonomy_filters' ) );
+		add_action( 'restrict_manage_posts', $this->add_taxonomy_filters(...) );
 
 		// Show featured_item post counts in the dashboard
-		add_action( 'right_now_content_table_end', array( $this, 'add_featured_item_counts' ) );
+		add_action( 'right_now_content_table_end', $this->add_featured_item_counts(...) );
 		
 
 		// Add taxonomy terms as body classes
-		add_filter( 'body_class', array( $this, 'add_body_classes' ) );
+		add_filter( 'body_class', $this->add_body_classes(...) );
 	}
 
 	/**
