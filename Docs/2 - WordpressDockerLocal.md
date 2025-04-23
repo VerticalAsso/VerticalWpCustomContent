@@ -62,13 +62,13 @@ a:2:{i:0;s:19:"akismet/akismet.php";i:1;s:35:"backupwordpress/backupwordpress.ph
 # Disabling theme from the database (selecting twenty twenty one instead)
 In the table `v34a_options` ->
 ```
-option_name LIKE "stylesheet" -> twentytwentyone
-option_name LIKE "template" -> twentytwentyone
+option_name LIKE "stylesheet" -> twentytwentyfive
+option_name LIKE "template" -> twentytwentyfive
 ```
 
 # Dans le docker compose :
 In the table `v34a_options` ->
 ```
-option_name LIKE "siteurl" -> 127.0.0.1
-option_name LIKE "home" -> 127.0.0.1
+option_name LIKE "siteurl" -> http://localhost:8080
+option_name LIKE "home" -> http://localhost:8080
 ```
