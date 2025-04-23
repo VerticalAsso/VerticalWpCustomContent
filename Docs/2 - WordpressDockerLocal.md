@@ -1,8 +1,14 @@
 # Run latest Wordpress in Docker
-```bash
-# Share host network with docker container
+## Override known host names and local DNS:
+in /etc/hosts, add `127.0.0.1 vertical-asso.fr` : redirects to `localhost` when `vertical-asso.fr` is reached
+```sh
+# Static table lookup for hostnames.
+# See hosts(5) for details.
+127.0.0.1 vertical-asso.fr
+```
 
-# in /etc/hosts, add 127.0.0.1 vertical-asso.fr  <<<<< - redirects to localhost when vertical-asso.fr is reached
+## Run docker image and map ports using host's network stack
+```bash
 # This is required to bind the local mariadb server (3306) to the docker website.
 # But there is probably something to do by running the server locally within the docker instead, starting from a *.sql backuo
 docker run -p 8000:80 --network=host wordpress:latest
@@ -37,6 +43,7 @@ define('FS_METHOD', 'direct');
 * set option_name = "home" to the same
 
 Then Open browser at `localhost:80` -> it should redirect to `http://vertical-asso.fr`
+This only works if the local dns (linux) knows how to deal with this :
 **⚠️ But before that, clear all cookies and session cache !!!**
 
 
@@ -50,3 +57,18 @@ a:2:{i:0;s:19:"akismet/akismet.php";i:1;s:35:"backupwordpress/backupwordpress.ph
 
 # Note : see Wordpress documentation to upgrade manually
 * => https://wordpress.org/documentation/article/updating-wordpress/
+
+
+# Disabling theme from the database (selecting twenty twenty one instead)
+In the table `v34a_options` ->
+```
+option_name LIKE "stylesheet" -> twentytwentyone
+option_name LIKE "template" -> twentytwentyone
+```
+
+# Dans le docker compose :
+In the table `v34a_options` ->
+```
+option_name LIKE "siteurl" -> 127.0.0.1
+option_name LIKE "home" -> 127.0.0.1
+```

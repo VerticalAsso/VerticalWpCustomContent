@@ -86,7 +86,7 @@ if($product->is_type( array( 'variable', 'grouped') )) wp_enqueue_script('wc-add
 	if(!isset($flatsome_opt['grid_style']) || $flatsome_opt['grid_style'] == "grid1"){ ?>
 
       <div class="text-center">
-      	<?php $product_cats = strip_tags($product->get_categories('|', '', '')); ?>
+      	<?php $product_cats = strip_tags((string) $product->get_categories('|', '', '')); ?>
           <h5 class="category"><?php list($firstpart) = explode('|', $product_cats); echo $firstpart; ?></h5>
           <div class="tx-div small"></div>
           <p class="name"><?php the_title(); ?></p>
@@ -109,7 +109,7 @@ if($product->is_type( array( 'variable', 'grouped') )) wp_enqueue_script('wc-add
 	    <table>
 			<tr>
 				<td>
-			  <?php $product_cats = strip_tags($product->get_categories('|', '', '')); ?>
+			  <?php $product_cats = strip_tags((string) $product->get_categories('|', '', '')); ?>
 	          <p class="name"><?php the_title(); ?></p>
 	          <h5 class="category"><?php list($firstpart) = explode('|', $product_cats); echo $firstpart; ?></h5>
 

@@ -64,7 +64,7 @@ function flatsome_register_required_plugins() {
 			'external_url' 			=> 'https://wordpress.org/plugins/regenerate-thumbnails/', // If set, overrides default API URL and points to an external URL
 		),
 
-		
+
 		array(
 			'name'     				=> 'Taxonomy Metadata', // The plugin name
 			'slug'     				=> 'taxonomy-metadata', // The plugin slug (typically the folder name)
@@ -75,7 +75,7 @@ function flatsome_register_required_plugins() {
 			'force_deactivation' 	=> false, // If true, plugin is deactivated upon theme switch, useful for theme-specific plugins
 			'external_url' 			=> 'https://wordpress.org/plugins/taxonomy-metadata/', // If set, overrides default API URL and points to an external URL
 		),
-		
+
 		array(
 			'name'     				=> 'Unlimited Sidebars Woosidebars', // The plugin name
 			'slug'     				=> 'woosidebars', // The plugin slug (typically the folder name)
@@ -86,7 +86,7 @@ function flatsome_register_required_plugins() {
 			'force_deactivation' 	=> false, // If true, plugin is deactivated upon theme switch, useful for theme-specific plugins
 			'external_url' 			=> 'https://wordpress.org/plugins/woosidebars/', // If set, overrides default API URL and points to an external URL
 		),
-		
+
 		array(
 			'name'     				=> 'YITH WooCommerce Ajax Search', // The plugin name
 			'slug'     				=> 'yith-woocommerce-ajax-search', // The plugin slug (typically the folder name)
@@ -275,7 +275,7 @@ include_once('inc/widgets/upsell-widget.php'); // Load Upsell widget
  */
 
 function flatsome_scripts() {
-	
+
 	global $flatsome_opt;
 
 	/* Styles */
@@ -286,7 +286,7 @@ function flatsome_scripts() {
 	   wp_register_style('flatsome-effect', get_template_directory_uri() .'/css/effects.css', array(), '2.2.3', 'all' );
 	} else {
 	   wp_enqueue_style( 'flatsome-css-minified', get_template_directory_uri() .'/css/flatsome.min.css', array(), '2.2.3', 'all' );
-	}	
+	}
 
 	/* JS libaries */
 	if(!isset($flatsome_opt['minified_flatsome']) || !$flatsome_opt['minified_flatsome']){
@@ -314,11 +314,11 @@ function flatsome_scripts() {
     wp_deregister_style( 'woocommerce_prettyPhoto_css' );
     wp_dequeue_script( 'prettyPhoto' );
     wp_dequeue_script( 'prettyPhoto-init' );
-	
+
 	if ( ! is_admin() ) {
-		wp_deregister_style('woocommerce-layout');	
-		wp_deregister_style('woocommerce-smallscreen');	
-		wp_deregister_style('woocommerce-general');	
+		wp_deregister_style('woocommerce-layout');
+		wp_deregister_style('woocommerce-smallscreen');
+		wp_deregister_style('woocommerce-general');
 	}
 
 
@@ -439,14 +439,15 @@ function add_ieFix () {
     echo '<![endif]-->';
 }
 add_action('wp_head', 'add_ieFix');
-	
 
-// Change product pr page if set.
-if(isset($flatsome_opt['products_pr_page'])){
-	$products = $flatsome_opt['products_pr_page'];
-	add_filter( 'loop_shop_per_page', create_function( '$cols', "return $products;" ), 20 );
+
+// Change products per page if set.
+if (isset($flatsome_opt['products_pr_page'])) {
+    $products = $flatsome_opt['products_pr_page'];
+    add_filter('loop_shop_per_page', function ($cols) use ($products) {
+        return $products;
+    }, 20);
 }
-
 
 /* Redirect to Homepage when customer log out */
 add_filter('logout_url', 'new_logout_url', 10, 2);

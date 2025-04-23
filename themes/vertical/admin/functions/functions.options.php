@@ -16,23 +16,23 @@ if (!function_exists('of_options'))
 		// Presets URL
 		$preset_url = get_template_directory_uri().'/admin/presets/';
 
-	       
+
 		//Access the WordPress Pages via an Array
 		$of_pages 			= array();
 		$of_pages_obj 		= get_pages('sort_column=post_parent,menu_order');
 		$of_pages['0'] = 'Select a page:';
 		foreach ($of_pages_obj as $of_page) {
 		    $of_pages[$of_page->ID] = $of_page->post_name; }
-	
+
 		//Testing 
 		$of_options_select 	= array("one","two","three","four","five"); 
 		$of_options_radio 	= array("one" => "One","two" => "Two","three" => "Three","four" => "Four","five" => "Five");
-		
+
 
 		/*-----------------------------------------------------------------------------------*/
 		/* TO DO: Add options/functions that use these */
 		/*-----------------------------------------------------------------------------------*/
-		
+
 		//More Options
 		$uploads_arr 		= wp_upload_dir();
 		$all_uploads_path 	= $uploads_arr['path'];
@@ -40,7 +40,7 @@ if (!function_exists('of_options'))
 		$other_entries 		= array("Select a number:","1","2","3","4","5","6","7","8","9","10","11","12","13","14","15","16","17","18","19");
 		$body_repeat 		= array("no-repeat","repeat-x","repeat-y","repeat");
 		$body_pos 			= array("top left","top center","top right","center left","center center","center right","bottom left","bottom center","bottom right");
-		
+
 		//$google_fonts = array('Open Sans' => 'Open Sans','Sacramento' => 'Sacramento','Droid Sans' =>'Droid Sans','Oswald' => 'Oswald','Droid Serif' => 'Droid Serif','Lato' => 'Lato','Francois One' => 'Francois One','Raleway' => 'Raleway','Arvo' => 'Arvo','Roboto Slab' => 'Roboto Slab','Noto Serif' => 'Noto Serif','Noto Sans' =>'Noto Sans','Abril Fatface'=>'Abril Fatface','Clicker Script' => 'Clicker Script');
 		$google_fonts = array('arial'=>'Arial',
 						'verdana'=>'Verdana, Geneva',
@@ -1489,7 +1489,7 @@ $of_options[] = array( 	"name" 		=> "Product Grid style",
 								'grid1' 	=> $url . 'grid1.gif',
 								'grid2' 	=> $url . 'grid2.gif',
 								'grid3' 	=> $url . 'grid3.gif',
-									
+
 						)
 );
 
@@ -1763,7 +1763,7 @@ $of_options[] = array( 	"name" 		=> "Featured items page",
 						"type" 		=> "select",
 						"options" => $of_pages
 ); */
- 
+
 
 $of_options[] = array( 	"name" 		=> "Related items",
 						"desc" 		=> "Change  style of related featured items",
@@ -1995,19 +1995,19 @@ $of_options[] = array( 	"name" 		=> "Enable Coupon on Checkout page",
 						"type" 		=> "checkbox"
 );
 
-				
+
 // Backup Options
 $of_options[] = array( 	"name" 		=> "Backup and Import",
 						"type" 		=> "heading",
 				);
-				
+
 $of_options[] = array( 	"name" 		=> "Backup and Restore Options",
 						"id" 		=> "of_backup",
 						"std" 		=> "",
 						"type" 		=> "backup",
 						"desc" 		=> 'You can use the two buttons below to backup your current options, and then restore it back at a later time. This is useful if you want to experiment on the options but would like to keep the old settings in case you need it back.',
 				);
-				
+
 $of_options[] = array( 	"name" 		=> "Transfer Theme Options Data",
 						"id" 		=> "of_transfer",
 						"std" 		=> "",
@@ -2016,7 +2016,7 @@ $of_options[] = array( 	"name" 		=> "Transfer Theme Options Data",
 );
 
 
-				
+
 }//End function: of_options()
 }//End chack if function exists: of_options()
 ?>

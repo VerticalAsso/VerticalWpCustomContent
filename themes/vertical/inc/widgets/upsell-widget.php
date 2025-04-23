@@ -53,7 +53,7 @@ class Upsell_Widget extends WP_Widget {
 		$products = new WP_Query( $args );
 
 		echo $before_widget;
-		
+
 
 		if ($products->have_posts()) :
 
@@ -85,7 +85,7 @@ class Upsell_Widget extends WP_Widget {
 	 */
 	public function update( $new_instance, $old_instance ) {
 		$instance = array();
-		$instance['title'] = strip_tags( $new_instance['title'] );
+		$instance['title'] = strip_tags( (string) $new_instance['title'] );
 
 		return $instance;
 	}

@@ -29,14 +29,14 @@ function featured_box($atts, $content = null) {
   <?php if($img) {
    ?><div  class="featured-img <?php if($animated){echo 'scroll-animate';} ?> <?php if($icon_border){ ?>featured-img-circle <?php } ?>" <?php if($animated) echo 'data-animate="'.$animated.'"'; ?> style="<?php if($img_width){?>width:<?php echo $img_width; ?>;max-height:<?php echo $img_width; ?>;<?php } ?> <?php if($icon_border){?>border-width:<?php echo $icon_border; ?>; border-color:<?php echo $icon_color; ?><?php }?>"><?php 
 
-  if (strpos($img,'.jpg') !== false || strpos($img,'.gif') !== false || strpos($img,'.png') !== false) {
+  if (str_contains((string) $img,'.jpg') || str_contains((string) $img,'.gif') || str_contains((string) $img,'.png')) {
           $img = $img;
   } else{
      $img = wp_get_attachment_image_src($img, 'medium');
      $img = $img[0];
   } 
 
-  if(strpos($img,'.svg') !== false) {
+  if(str_contains((string) $img,'.svg')) {
     $svg = new SimpleXMLElement( wp_remote_fopen($img));
       $padding = "0";
       if($icon_border) $padding = ($img_width*0.2);

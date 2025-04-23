@@ -16,7 +16,7 @@ $attachment_ids = $product->get_gallery_attachment_ids();
 ?>         
 	
 <li class="product small">
-<a href="<?php the_permalink(); ?>" style="display:block" class="tip-top"  title='<?php the_title(); ?> / <?php echo  htmlentities($product->get_price_html()); ?>'>
+<a href="<?php the_permalink(); ?>" style="display:block" class="tip-top"  title='<?php the_title(); ?> / <?php echo  htmlentities((string) $product->get_price_html()); ?>'>
       <div class="product-image">
         <?php echo get_the_post_thumbnail($post->ID, apply_filters( 'single_product_small_thumbnail_size', 'shop_thumbnail' )) ?>
       </div><!-- end product-image -->

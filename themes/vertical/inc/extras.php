@@ -2,8 +2,8 @@
 
 /* CONTENT */
 
-/* - Extra body classes 
-/* - Filter for next/previous image links 
+/* - Extra body classes
+/* - Filter for next/previous image links
 /* - Custom metaboxes for Product Categories
 /* - Extra editor styles
 /* - Shorter Exerpt
@@ -19,7 +19,7 @@
 
 function flatsome_body_classes( $classes ) {
 	global $flatsome_opt;
-	// add antialias to all texts 
+	// add antialias to all texts
 	$classes[] = 'antialiased';
 
 	// Adds a class of group-blog to blogs with more than 1 published author
@@ -32,16 +32,16 @@ function flatsome_body_classes( $classes ) {
 		$classes[] = 'dark-header';
     $classes[] = 'org-dark-header';
   }
-  
+
 	// add stikcy header class
 	if($flatsome_opt['header_sticky'] && !isset($_GET["shortcode"])){
 		$classes[] = 'sticky_header';
-	}	
+	}
 
 	if($flatsome_opt['breadcrumb_size']){
 		$classes[] = $flatsome_opt['breadcrumb_size'];
-	}	
-	
+	}
+
 	// add logo-center class
 	if($flatsome_opt['logo_position'] == 'center'){
 		$classes[] = 'logo-center';
@@ -155,10 +155,10 @@ function top_text_taxonomy_edit_meta_field($term) {
 	 ?>
 	<tr class="form-field">
 	<th scope="row" valign="top"><label for="term_meta[cat_header]"><?php _e( 'Top Content', 'flatsome' ); ?></label></th>
-		<td>				
-				<?php 
+		<td>
+				<?php
 
-				$content = esc_attr( $term_meta[0]['cat_header'] ) ? esc_attr( $term_meta[0]['cat_header'] ) : ''; 
+				$content = esc_attr( $term_meta[0]['cat_header'] ) ? esc_attr( $term_meta[0]['cat_header'] ) : '';
 				echo '<textarea id="term_meta[cat_header]" name="term_meta[cat_header]">'.$content.'</textarea>'; ?>
 			<p class="description"><?php _e( 'Enter a value for this field. Shortcodes are allowed. This will be displayed at top of the category.','flatsome' ); ?></p>
 		</td>
@@ -177,10 +177,10 @@ function bottom_text_taxonomy_edit_meta_field($term) {
    ?>
   <tr class="form-field">
   <th scope="row" valign="top"><label for="term_meta[cat_footer]"><?php _e( 'Bottom Content', 'flatsome' ); ?></label></th>
-    <td>        
-        <?php 
+    <td>
+        <?php
 
-        $content = esc_attr( $term_meta[0]['cat_footer'] ) ? esc_attr( $term_meta[0]['cat_footer'] ) : ''; 
+        $content = esc_attr( $term_meta[0]['cat_footer'] ) ? esc_attr( $term_meta[0]['cat_footer'] ) : '';
         echo '<textarea id="term_meta[cat_footer]" name="term_meta[cat_footer]">'.$content.'</textarea>'; ?>
       <p class="description"><?php _e( 'Enter a value for this field. Shortcodes are allowed. This will be displayed at bottom of the category.','flatsome' ); ?></p>
     </td>
@@ -205,8 +205,8 @@ function save_taxonomy_custom_meta( $term_id ) {
 		update_term_meta($term_id, 'cat_meta', $term_meta);
 
 	}
-}  
-add_action( 'edited_product_cat', 'save_taxonomy_custom_meta', 10, 2 );  
+}
+add_action( 'edited_product_cat', 'save_taxonomy_custom_meta', 10, 2 );
 }
 
 
@@ -243,31 +243,31 @@ function ux_formats_before_init( $settings ) {
                        'title' => 'Button Secondary',
                        'selector' => 'a',
                        'classes' => 'button secondary',
-               
+
                   ),
                   array(
                        'title' => 'Button Alert',
                        'selector' => 'a',
                        'classes' => 'button alert',
-               
+
                   ),
                   array(
                        'title' => 'Button Success',
                        'selector' => 'a',
                        'classes' => 'button success',
-               
+
                   ),
                   array(
                        'title' => 'Button Alternative Primary',
                        'selector' => 'a',
                        'classes' => 'button alt-button',
-               
+
                   ),
                    array(
                        'title' => 'Button Alternative White',
                        'selector' => 'a',
                        'classes' => 'button alt-button white',
-               
+
                   ),
                         array(
                       'title' => 'Large - Button Primary',
@@ -278,37 +278,37 @@ function ux_formats_before_init( $settings ) {
                        'title' => 'Large Button Secondary',
                        'selector' => 'a',
                        'classes' => 'button large  secondary',
-               
+
                   ),
                   array(
                        'title' => 'Large Button Alert',
                        'selector' => 'a',
                        'classes' => 'button large  alert',
-               
+
                   ),
                   array(
                        'title' => 'Large Button Success',
                        'selector' => 'a',
                        'classes' => 'button large  success',
-               
+
                   ),
                   array(
                        'title' => 'Large Button Alternative Primary',
                        'selector' => 'a',
                        'classes' => 'button large  alt-button success',
-               
+
                   ),
                   array(
                        'title' => 'Large Button Alternative Secondary',
                        'selector' => 'a',
                        'classes' => 'button large  alt-button secondary',
-               
+
                   ),
                    array(
                        'title' => 'Large Button Alternative White',
                        'selector' => 'a',
                        'classes' => 'button large alt-button white',
-               
+
                   )
               )
         ),
@@ -318,14 +318,14 @@ function ux_formats_before_init( $settings ) {
           'selector' => 'p',
           'classes' => 'text-pull-inn',
           'exact' => 'true',
-  
+
         ),
     	  array(
           'title' => 'Paragraph - Lead',
           'selector' => 'p',
           'classes' => 'lead',
           'exact' => 'true',
-  
+
         ),
 
     	  array(
@@ -333,14 +333,14 @@ function ux_formats_before_init( $settings ) {
           'selector' => 'p',
           'classes' => 'lead text-center',
           'exact' => 'true',
-  
+
         ),
 
          array(
           'title' => 'Uppercase',
           'selector' => '*',
           'classes' => 'uppercase',
-  
+
         ),
          array(
           'title' => 'Thin Font',
@@ -358,113 +358,113 @@ function ux_formats_before_init( $settings ) {
           'title' => 'Alternative Font',
           'selector' => '*',
           'classes' => 'alt-font',
-  
+
         ),
 
         array(
           'title' => 'Title - Large',
           'selector' => '*',
           'classes' => 'h-large',
-  
+
         ),
 
          array(
           'title' => 'Title - X-Large',
           'selector' => '*',
           'classes' => 'h-xlarge',
-  
+
         ),
 
         array(
           'title' => 'Backgroud - Black',
           'selector' => '*',
           'classes' => 'text-box-dark',
-  
+
         ),
 
         array(
           'title' => 'Background - White',
           'selector' => '*',
           'classes' => 'text-box-light',
-  
+
         ),
 
          array(
           'title' => 'Background - Primary Color',
           'selector' => '*',
           'classes' => 'text-box-primary',
-  
+
         ),
 
           array(
           'title' => 'Text Border White',
           'selector' => '*',
           'classes' => 'text-bordered-white',
-  
+
         ),
           array(
           'title' => 'Text Border Primary',
           'selector' => '*',
           'classes' => 'text-bordered-primary',
-  
+
         ),
           array(
           'title' => 'Text Border Dark',
           'selector' => '*',
           'classes' => 'text-bordered-dark',
-  
+
         )
           ,
           array(
           'title' => 'Text Border Top and Bottom White',
           'selector' => '*',
           'classes' => 'text-boarder-top-bottom-white',
-  
+
         )
           ,
           array(
           'title' => 'Text Border Top and Bottom Dark',
           'selector' => '*',
           'classes' => 'text-boarder-top-bottom-dark',
-  
-        ), 
+
+        ),
           array(
           'title' => 'Tilt Left',
           'selector' => '*',
           'classes' => 'tilt-left',
-  
+
         ),
           array(
           'title' => 'Text Border Top and Bottom Dark',
           'selector' => '*',
           'classes' => 'tilt-right',
-  
+
         )
          ,
         array(
           'title' => 'Bullets List - Check mark',
           'selector' => 'li',
           'classes' => 'bullet-checkmark',
-  
+
         ),
         array(
           'title' => 'Bullets List - Arrow',
           'selector' => 'li',
           'classes' => 'bullet-arrow',
-  
+
         ),
         array(
           'title' => 'Bullets List - Star',
           'selector' => 'li',
           'classes' => 'bullet-star',
-  
+
         ),
 
         array(
           'title' => 'Text shadow',
           'selector' => '*',
           'classes' => 'drop-shadow',
-  
+
         ),
 
 
@@ -472,20 +472,20 @@ function ux_formats_before_init( $settings ) {
           'title' => 'Animate -Fade In',
           'selector' => '*',
           'classes' => 'animated fadeIn',
-  
+
         ),
 
         array(
           'title' => 'Animate - Fade In Left',
           'selector' => '*',
           'classes' => 'animated fadeInLeft',
-  
+
         ),
         array(
           'title' => 'Animate - Fade In Right',
           'selector' => '*',
           'classes' => 'animated fadeInRight',
-  
+
         ),
 
     );
@@ -547,10 +547,10 @@ function fixShortcode($content){
 function ux_mce4_options( $init ) {
 global $flatsome_opt;
 $default_colours = '
-    "000000", "Black",        "993300", "Burnt orange", "333300", "Dark olive",   "003300", "Dark green",   "003366", "Dark azure",   "000080", "Navy Blue",      "333399", "Indigo",       "333333", "Very dark gray", 
-    "800000", "Maroon",       "FF6600", "Orange",       "808000", "Olive",        "008000", "Green",        "008080", "Teal",         "0000FF", "Blue",           "666699", "Grayish blue", "808080", "Gray", 
-    "FF0000", "Red",          "FF9900", "Amber",        "99CC00", "Yellow green", "339966", "Sea green",    "33CCCC", "Turquoise",    "3366FF", "Royal blue",     "800080", "Purple",       "999999", "Medium gray", 
-    "FF00FF", "Magenta",      "FFCC00", "Gold",         "FFFF00", "Yellow",       "00FF00", "Lime",         "00FFFF", "Aqua",         "00CCFF", "Sky blue",       "993366", "Brown",        "C0C0C0", "Silver", 
+    "000000", "Black",        "993300", "Burnt orange", "333300", "Dark olive",   "003300", "Dark green",   "003366", "Dark azure",   "000080", "Navy Blue",      "333399", "Indigo",       "333333", "Very dark gray",
+    "800000", "Maroon",       "FF6600", "Orange",       "808000", "Olive",        "008000", "Green",        "008080", "Teal",         "0000FF", "Blue",           "666699", "Grayish blue", "808080", "Gray",
+    "FF0000", "Red",          "FF9900", "Amber",        "99CC00", "Yellow green", "339966", "Sea green",    "33CCCC", "Turquoise",    "3366FF", "Royal blue",     "800080", "Purple",       "999999", "Medium gray",
+    "FF00FF", "Magenta",      "FFCC00", "Gold",         "FFFF00", "Yellow",       "00FF00", "Lime",         "00FFFF", "Aqua",         "00CCFF", "Sky blue",       "993366", "Brown",        "C0C0C0", "Silver",
     "FF99CC", "Pink",         "FFCC99", "Peach",        "FFFF99", "Light yellow", "CCFFCC", "Pale green",   "CCFFFF", "Pale cyan",    "99CCFF", "Light sky blue", "CC99FF", "Plum",         "FFFFFF", "White"
 ';
 $custom_colours = '
@@ -571,7 +571,7 @@ function short_excerpt($limit) {
         $excerpt = implode(" ",$excerpt).'...';
       } else {
         $excerpt = implode(" ",$excerpt);
-      } 
+      }
       $excerpt = preg_replace('`\[[^\]]*\]`','',$excerpt);
       return $excerpt;
     }
@@ -583,9 +583,9 @@ function short_excerpt($limit) {
         $content = implode(" ",$content).'...';
       } else {
         $content = implode(" ",$content);
-      } 
+      }
       $content = preg_replace('/\[.+\]/','', $content);
-      $content = apply_filters('the_content', $content); 
+      $content = apply_filters('the_content', $content);
       $content = str_replace(']]>', ']]&gt;', $content);
       return $content;
 }
@@ -595,17 +595,17 @@ function ux_hex2rgba($color, $opacity = false) {
 	$default = 'rgb(0,0,0)';
 	//Return default if no color provided
 	if(empty($color))
-          return $default; 
+          return $default;
 
-	//Sanitize $color if "#" is provided 
+	//Sanitize $color if "#" is provided
         if ($color[0] == '#' ) {
-        	$color = substr( $color, 1 );
+        	$color = substr( (string) $color, 1 );
         }
 
         //Check if color has 6 or 3 characters and get values
-        if (strlen($color) == 6) {
+        if (strlen((string) $color) == 6) {
                 $hex = array( $color[0] . $color[1], $color[2] . $color[3], $color[4] . $color[5] );
-        } elseif ( strlen( $color ) == 3 ) {
+        } elseif ( strlen( (string) $color ) == 3 ) {
                 $hex = array( $color[0] . $color[0], $color[1] . $color[1], $color[2] . $color[2] );
         } else {
                 return $default;
@@ -694,9 +694,9 @@ function woo_new_product_tab( $tabs ) {
     'callback'  => 'ux_global_tab_content'
   );
   }
- 
+
   return $tabs;
- 
+
 }
 function ux_custom_tab_content() {
   // The new tab content
@@ -739,18 +739,18 @@ function flatsome_maintenance_mode_on_activation()  {
   return;
   $plugin = isset( $_REQUEST['plugin'] ) ? $_REQUEST['plugin'] : '';
   check_admin_referer( "activate-plugin_{$plugin}" );
-  
+
     // Clear Cachify Cache
     if ( has_action('cachify_flush_cache') ) {
     do_action('cachify_flush_cache');
     }
-    
+
     // Clear Super Cache
     if ( function_exists( 'wp_cache_clear_cache' ) ) {
     ob_end_clean();
     wp_cache_clear_cache();
     }
-    
+
     // Clear W3 Total Cache
     if ( function_exists( 'w3tc_pgcache_flush' ) ) {
     ob_end_clean();
@@ -763,18 +763,18 @@ function flatsome_maintenance_mode_on_deactivation() {
   return;
   $plugin = isset( $_REQUEST['plugin'] ) ? $_REQUEST['plugin'] : '';
   check_admin_referer( "deactivate-plugin_{$plugin}" );
-  
+
     // Clear Cachify Cache
     if ( has_action('cachify_flush_cache') ) {
     do_action('cachify_flush_cache');
     }
-    
+
     // Clear Super Cache
     if ( function_exists( 'wp_cache_clear_cache' ) ) {
     ob_end_clean();
     wp_cache_clear_cache();
     }
-    
+
     // Clear W3 Total Cache
     if ( function_exists( 'w3tc_pgcache_flush' ) ) {
     ob_end_clean();
@@ -792,13 +792,24 @@ $smm_active_message = __('<strong>Maintenance mode</strong> is <strong>active</s
 $smm_admin_notice = '<div id="message" class="error fade"><p>' . $smm_active_message . ' <a href="themes.php?page=optionsframework&tab=of-option-globalsettings">' . __( 'Deactivate it, when work is done.', 'flatsome-maintenance-mode' ) . '</a></p></div>';
 
 if ( is_multisite() && is_plugin_active_for_network( plugin_basename( __FILE__ ) ) )
-add_action( 'network_admin_notices', create_function( '', "echo '$smm_admin_notice';" ) ); 
-add_action( 'admin_notices', create_function( '', "echo '$smm_admin_notice';" ) ); 
-add_filter( 'login_message', create_function( '', "return '<div id=\"login_error\">$smm_active_message</div>';" ) );
+add_action( 'network_admin_notices', function()
+{
+  echo '$smm_admin_notice';
+});
+
+add_action( 'admin_notices', function()
+{
+  echo '$smm_admin_notice';
+});
+
+add_filter( 'login_message', function()
+{
+  return '<div id=\"login_error\">$smm_active_message</div>';
+});
 
 /**
  * Maintenance message when active
-*/ 
+*/
 function flatsome_maintenance_mode()
 {
   global $flatsome_opt;

@@ -171,25 +171,25 @@ function of_ajax_callback()
 	//Uploads
 	if($save_type == 'upload')
 	{
-		
+
 		$clickedID = $_POST['data']; // Acts as the name
 		$filename = $_FILES[$clickedID];
-       	$filename['name'] = preg_replace('/[^a-zA-Z0-9._\-]/', '', $filename['name']); 
-		
+       	$filename['name'] = preg_replace('/[^a-zA-Z0-9._\-]/', '', (string) $filename['name']); 
+
 		$override['test_form'] = false;
 		$override['action'] = 'wp_handle_upload';    
 		$uploaded_file = wp_handle_upload($filename,$override);
-		 
+
 			$upload_tracking[] = $clickedID;
-				
+
 			//update $options array w/ image URL			  
 			$upload_image = $all; //preserve current data
-			
+
 			$upload_image[$clickedID] = $uploaded_file['url'];
-			
+
 			of_save_options($upload_image);
-		
-				
+
+
 		 if(!empty($uploaded_file['error'])) {echo 'Upload Error: ' . $uploaded_file['error']; }	
 		 else { echo $uploaded_file['url']; } // Is the Response
 		 
@@ -226,7 +226,7 @@ function of_ajax_callback()
 	elseif($save_type == 'import_options'){
 
 
-		$smof_data = unserialize(base64_decode($_POST['data'])); //100% safe - ignore theme check nag
+		$smof_data = unserialize(base64_decode((string) $_POST['data'])); //100% safe - ignore theme check nag
 		of_save_options($smof_data);
 
 		
@@ -234,7 +234,7 @@ function of_ajax_callback()
 	}
 	elseif ($save_type == 'save')
 	{
-		wp_parse_str(stripslashes($_POST['data']), $smof_data);
+		wp_parse_str(stripslashes((string) $_POST['data']), $smof_data);
 		unset($smof_data['security']);
 		unset($smof_data['of_save']);
 		of_save_options($smof_data);
@@ -244,7 +244,7 @@ function of_ajax_callback()
 	elseif ($save_type == 'reset')
 	{
 		of_save_options($options_machine->Defaults);
-		
+
         die('1'); //options reset
 	}
 

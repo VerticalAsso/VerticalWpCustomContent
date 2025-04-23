@@ -1,6 +1,6 @@
 <?php 
 // [accordion]
-function ux_accordion($atts, $content=null, $code) {
+function ux_accordion($atts, $code, $content=null) {
 	extract(shortcode_atts(array(
 		'open' => '0',
 		'title' => ''
@@ -12,7 +12,7 @@ add_shortcode('accordion', 'ux_accordion');
 
 
 // [accordion-item]
-function ux_accordion_item($atts, $content=null, $code) {
+function ux_accordion_item($atts, $code, $content=null) {
     extract(shortcode_atts(array(
 		'title' => '',
 	), $atts));
