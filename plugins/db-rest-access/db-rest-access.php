@@ -19,21 +19,82 @@ define('DB_REST_ACCESS_APIKEY_OPT_NAME', 'db_rest_access_apikey');
 require_once plugin_dir_path(__FILE__) . 'includes/admin-settings.php';
 
 // Register the REST API routes
-add_action('rest_api_init', function () {
-    register_rest_route('dbrest/v1', '/table=(?P<table>[a-zA-Z0-9-]+)', [
+add_action('rest_api_init', 'register_rest_routes');
+
+add_action( 'admin_menu', 'add_php_info_page' );
+
+function add_php_info_page() {
+    add_submenu_page(
+        'tools.php',           // Parent page
+        'Xdebug Info',         // Menu title
+        'Xdebug Info',         // Page title
+        'manage_options',      // user "role"
+        'php-info-page',       // page slug
+        'php_info_page_body'); // callback function
+}
+
+function php_info_page_body() {
+    $message = '<h2>No Xdebug enabled</h2>';
+    if ( function_exists( 'xdebug_info' ) ) {
+        xdebug_info();
+    } else {
+        echo $message;
+    }
+}
+
+/**
+ * @brief registers REST routes
+ */
+function register_rest_routes()
+{
+    register_rest_route('dbrest/v1', '/table', [
         'methods' => 'GET',
-        'callback' => 'db_rest_access_get_data',
+        'callback' => 'db_rest_access_get_table',
         'permission_callback' => 'db_rest_access_verify_api_key',
+        'args' => [
+            'name' => [
+                'required' => true,
+                'validate_callback' => 'check_table_name_arg_from_request'
+            ]
+        ]
     ]);
-});
+}
+
+function check_table_name_arg_from_request(string $param)
+{
+    // Validate table name to prevent SQL injection
+    global $wpdb;
+    $table_name = $wpdb->prefix . sanitize_text_field($param);
+    return $wpdb->get_var("SHOW TABLES LIKE '$table_name'") === $table_name;
+}
 
 // REST API callback: Fetch data from the database
-function db_rest_access_get_data(WP_REST_Request $request) {
+function db_rest_access_get_table(WP_REST_Request $request)
+{
     global $wpdb;
 
-    // Example: Query a custom table named "wp_custom_table"
-    $table_name = $wpdb->prefix . 'custom_table';
-    $results = $wpdb->get_results("SELECT * FROM $table_name LIMIT 10");
+    // Get the table name from the query parameter
+    $table_name = $wpdb->prefix . sanitize_text_field($request->get_param('name'));
+
+    // Get the optional custom SQL query
+    $custom_query = $request->get_param('custom_query');
+
+    // If a custom query is provided, validate and use it
+    if (!empty($custom_query)) {
+        // Ensure the custom query doesn't contain harmful SQL (basic validation)
+        if (strpos(strtolower($custom_query), 'delete') !== false || strpos(strtolower($custom_query), 'update') !== false) {
+            return new WP_Error('forbidden', 'Custom SQL query contains forbidden operations.', ['status' => 403]);
+        }
+
+        // Execute the custom query
+        $results = $wpdb->get_results($custom_query);
+    }
+    else
+    {
+        // Default query: Select all rows from the table
+        //$results = $wpdb->get_results("SELECT * FROM $table_name LIMIT 10");
+        $results = $wpdb->get_results("SELECT * FROM $table_name");
+    }
 
     return rest_ensure_response($results);
 }
@@ -45,7 +106,7 @@ function db_rest_access_verify_api_key(WP_REST_Request $request) {
 
     // Retrieve the stored API key from the options table
     $options = get_option(DB_REST_ACCESS_APIKEY_OPT_NAME);
-    $stored_api_key = isset($options['option_value']) ? $options['option_value'] : '';
+    $stored_api_key = isset($options['api_key']) ? $options['api_key'] : '';
 
     // Reject queries when ApiKey is not there yet
     if(empty($stored_api_key))

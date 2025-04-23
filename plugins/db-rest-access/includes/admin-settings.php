@@ -23,7 +23,7 @@ class DB_Rest_Access_Settings {
 
     // Register plugin settings
     public function register_settings() {
-        register_setting('db_rest_access_group', DB_REST_ACCESS_OPTION_NAME);
+        register_setting('db_rest_access_group', DB_REST_ACCESS_APIKEY_OPT_NAME);
 
         add_settings_section(
             'db_rest_access_main_section',
@@ -59,10 +59,10 @@ class DB_Rest_Access_Settings {
 
     // Render the API key input field
     public function api_key_field_callback() {
-        $options = get_option(DB_REST_ACCESS_OPTION_NAME);
+        $options = get_option(DB_REST_ACCESS_APIKEY_OPT_NAME);
         $api_key = isset($options['api_key']) ? esc_attr($options['api_key']) : '';
         ?>
-        <input type="text" name="<?php echo DB_REST_ACCESS_OPTION_NAME; ?>[api_key]" value="<?php echo $api_key; ?>" class="regular-text">
+        <input type="text" name="<?php echo DB_REST_ACCESS_APIKEY_OPT_NAME; ?>[api_key]" value="<?php echo $api_key; ?>" class="regular-text">
         <p class="description">Enter the API key for accessing the REST endpoints.</p>
         <?php
     }
