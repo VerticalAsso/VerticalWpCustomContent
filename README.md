@@ -15,7 +15,7 @@ Vertical association WordPress custom content (plugins / themes)
 
 ## Build and run docker images
 
-Follow the docs in [3 - Docker Compose.md](Docs/3%20-%20Docker%20Compose.md)).
+Follow the docs in [Docs/3 - Docker Compose.md](Docs/3%20-%20Docker%20Compose.md).
 Don't forget to update `wp-config.php` first, then the `v34a_options` table in the datatabase.  
 
 ## Test WordPress update
