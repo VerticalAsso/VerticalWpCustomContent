@@ -9,7 +9,7 @@ Still, some ports are mapped to the host system, so that it is possible to edit 
 
 ## Prerequisite : grabbing backups
 
-Download (and extract) the backups in a `BackedUpContent`) folder at the repository root.  
+Download (and extract) the backups in a `BackedUpContent`) folder at the repository root.
 The structure should look like this :
 
 * wp-content
@@ -50,14 +50,14 @@ docker compose down -v
 2. Open a DB editor (like DBeaver) and create a new MariaDb connection, on port 2400 (mapped in docker-compose file, check if different)
 3. Go to `v34a_options` and edit :
 
-* siteurl : from <https://vertical-asso.fr> -> <http://localhost:8080>
-* home : from <https://vertical-asso.fr> -> <http://localhost:8080>
+    * siteurl : from <https://vertical-asso.fr> -> <http://localhost:8080>
+    * home : from <https://vertical-asso.fr> -> <http://localhost:8080>
 
 4. Disable the broken theme
 From `v34a_options` table :
 
-* option 4x "template" : from vertical to twentytwenty*** -> check in wp-content/themes to see the available ones
-* option 4x "stylesheet" : from vertical-child to twentytwenty*** -> check in wp-content/themes to see the available ones
+   * option 4x "template" : from vertical to twentytwenty*** -> check in wp-content/themes to see the available ones
+   * option 4x "stylesheet" : from vertical-child to twentytwenty*** -> check in wp-content/themes to see the available ones
 
 5. Disable all plugins :
 From `v34a_options` table :
@@ -66,11 +66,10 @@ set "active_plugins" to `a:0:{}`
 6. Visit : "<http://localhost:8080/wp-admin>" and click on "Update database"
 7. Go to the Extensions panel, select all extensions and update them.
 8. Re-enable all extensions except:
-
-* um-member-patch 2.0.4
-* nextgen public uploader
+    * um-member-patch 2.0.4 -> Can be removed
+    * nextgen public uploader -> Can be removed
 
 ## Debugging within the wordpress docker container
 
-With vscode, attach to a running container and open the `/var/www/html/` folder.  
-Check the log file `wp-content/debug.log`.  
+With vscode, attach to a running container and open the `/var/www/html/` folder.
+Check the log file `wp-content/debug.log`.
