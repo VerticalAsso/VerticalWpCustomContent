@@ -84,12 +84,84 @@ function register_events_rest_route()
             ],
         ]
     ]);
+
 }
 add_action('rest_api_init', 'register_events_rest_route');
 
+// Retrieves event-tickets (meaning the ticket template used by an event to accept bookings)
+function register_event_tickets_route() {
+    register_rest_route('dbrest/v1', '/event-tickets', [
+        'methods' => 'GET',
+        'callback' => 'dbrest_get_event_tickets',
+        'permission_callback' => 'db_rest_access_verify_api_key',
+        'args' => [
+            'event_id' => [
+                'required' => true,
+                'validate_callback' => function($param) {
+                    return is_numeric($param) && $param > 0;
+                }
+            ]
+        ]
+    ]);
+}
+add_action('rest_api_init', 'register_event_tickets_route');
+
+function register_event_bookings_route() {
+    register_rest_route('dbrest/v1', '/event-bookings', [
+        'methods' => 'GET',
+        'callback' => 'dbrest_get_event_bookings',
+        'permission_callback' => 'db_rest_access_verify_api_key',
+        'args' => [
+            'event_id' => [
+                'required' => true,
+                'validate_callback' => function($param) {
+                    return is_numeric($param) && $param > 0;
+                }
+            ],
+            'status' => [
+                'required' => false,
+                'validate_callback' => function($param) {
+                    return in_array($param, ['all', 'validated']);
+                },
+                'default' => 'validated'
+            ]
+        ]
+    ]);
+}
+add_action('rest_api_init', 'register_event_bookings_route');
+
 /**
- * REST API callback: Fetch events filtered by timeframe.
+ * @api {get} /wp-json/dbrest/v1/events Get paginated events
+ * @apiName GetEvents
+ * @apiGroup Events
+ *
+ * @apiDescription
+ * Retrieve a paginated list of events, filtered by timeframe and supporting offset/limit.
+ *
+ * @apiParam {Number} [offset=0] Pagination start offset.
+ * @apiParam {Number} [limit=100] Maximum number of events to return.
+ * @apiParam {String} [timeframe] Optional filter by event start/end date.
+ *
+ * @apiSuccess {Object[]} events List of event objects.
+ * @apiSuccess {Number} count Number of events returned.
+ * @apiSuccess {Number} total_events Total number of matching events.
+ * @apiSuccess {Number} total_pages Total number of pages.
+ * @apiSuccess {Number} current_page Current page number (1-based).
+ *
+ * @apiExample {curl} Example usage:
+ *     curl -X GET "https://yourdomain.com/wp-json/dbrest/v1/events?offset=0&limit=100"
+ *
+ * @apiSuccessExample {json} Success-Response:
+ *     HTTP/1.1 200 OK
+ *     {
+ *         "events": [ ... ],
+ *         "count": 100,
+ *         "total_events": 245,
+ *         "total_pages": 3,
+ *         "current_page": 1
+ *     }
  */
+
 function dbrest_get_events_by_timeframe(WP_REST_Request $request)
 {
     global $wpdb;
@@ -183,6 +255,148 @@ function dbrest_get_events_by_timeframe(WP_REST_Request $request)
 
     return rest_ensure_response($response);
 }
+
+// Retrieves event-tickets (meaning the ticket template used by an event to accept bookings)
+/**
+ * @api {get} /wp-json/dbrest/v1/event-tickets Get event ticket templates
+ * @apiName GetEventTickets
+ * @apiGroup Events
+ *
+ * @apiDescription
+ * Retrieve all ticket templates for a specific event.
+ *
+ * @apiParam {Number} event_id The ID of the event (required).
+ *
+ * @apiSuccess {Object[]} tickets List of tickets for the event (may be empty).
+ * @apiSuccess {Number} count Number of tickets returned.
+ * @apiSuccess {Number} event_id The event ID requested.
+ *
+ * @apiExample {curl} Example usage:
+ *     curl -X GET "https://yourdomain.com/wp-json/dbrest/v1/event-tickets?event_id=123"
+ *
+ * @apiSuccessExample {json} Success-Response:
+ *     HTTP/1.1 200 OK
+ *     {
+ *         "tickets": [
+ *             {
+ *                 "ticket_id": 1,
+ *                 "event_id": 123,
+ *                 "ticket_members_roles": ["role1", "role2"]
+ *             }
+ *         ],
+ *         "count": 1,
+ *         "event_id": 123
+ *     }
+ */
+
+function dbrest_get_event_tickets(WP_REST_Request $request) {
+    global $wpdb;
+    $event_id = $request->get_param('event_id');
+    $table = $wpdb->prefix . 'em_tickets';
+
+    // Prepare and execute the query safely
+    $results = $wpdb->get_results(
+        $wpdb->prepare("SELECT * FROM $table WHERE event_id = %d", $event_id)
+    );
+
+    // Unwrap the PHP serialized array so that it'll be easier for consummer code later on to handle it.
+    foreach ($results as &$row) {
+        if (isset($row->ticket_members_roles)) {
+            $roles = @unserialize($row->ticket_members_roles);
+            if ($roles !== false && is_array($roles)) {
+                $row->ticket_members_roles = $roles;
+            }
+        }
+    }
+
+    return rest_ensure_response([
+        "tickets" => $results,
+        "count" => count($results),
+        "event_id" => $event_id
+    ]);
+}
+
+// Retrieves all bookings for a given event
+/**
+ * @api {get} /wp-json/dbrest/v1/event-bookings Get event bookings
+ * @apiName GetEventBookings
+ * @apiGroup Bookings
+ *
+ * @apiDescription
+ * Retrieve all bookings for a specific event, either just validated bookings or all (including pending).
+ *
+ * @apiParam {Number} event_id The ID of the event (required).
+ * @apiParam {String="validated","all"} [status="validated"] Booking status filter:
+ *   - "validated": only validated bookings (status = '1')
+ *   - "all": all bookings (validated, pending, etc.)
+ *
+ * @apiSuccess {Object[]} bookings List of bookings matching criteria (may be empty).
+ * @apiSuccess {Number} count Number of bookings returned.
+ * @apiSuccess {Number} event_id The event ID requested.
+ * @apiSuccess {String} filter_status The status filter applied.
+ *
+ * @apiExample {curl} Get only validated bookings:
+ *     curl -X GET "https://yourdomain.com/wp-json/dbrest/v1/event-bookings?event_id=123"
+ *
+ * @apiExample {curl} Get all bookings:
+ *     curl -X GET "https://yourdomain.com/wp-json/dbrest/v1/event-bookings?event_id=123&status=all"
+ *
+ * @apiSuccessExample {json} Success-Response:
+ *     HTTP/1.1 200 OK
+ *     {
+ *         "bookings": [
+ *             {
+ *                 "booking_id": 5,
+ *                 "event_id": 123,
+ *                 "booking_status": "1"
+ *             }
+ *         ],
+ *         "count": 1,
+ *         "event_id": 123,
+ *         "filter_status": "validated"
+ *     }
+ */
+function dbrest_get_event_bookings(WP_REST_Request $request) {
+    global $wpdb;
+    $event_id = $request->get_param('event_id');
+    $status = $request->get_param('status');
+    $table = $wpdb->prefix . 'em_bookings'; // Adjust if your table prefix is different
+
+    // Build the query depending on status
+    if ($status === 'all') {
+        $query = $wpdb->prepare(
+            "SELECT * FROM $table WHERE event_id = %d",
+            $event_id
+        );
+    } else { // validated only
+        $query = $wpdb->prepare(
+            "SELECT * FROM $table WHERE event_id = '%d' AND booking_status = '1'",
+            $event_id, '1'
+        );
+    }
+
+    $results = $wpdb->get_results($query);
+
+
+    // Unwrap the PHP serialized array so that it'll be easier for consummer code later on to handle it.
+    foreach ($results as &$row) {
+        if (isset($row->booking_meta)) {
+            $meta = @unserialize($row->booking_meta);
+            if ($meta !== false && is_array($meta)) {
+                $row->booking_meta = $meta;
+            }
+        }
+    }
+
+
+    return rest_ensure_response([
+        "bookings" => $results,
+        "count" => count($results),
+        "event_id" => $event_id,
+        "filter_status" => $status
+    ]);
+}
+
 
 // Verify the API key
 function db_rest_access_verify_api_key(WP_REST_Request $request) {
