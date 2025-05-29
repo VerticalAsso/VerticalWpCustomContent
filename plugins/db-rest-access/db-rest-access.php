@@ -376,12 +376,12 @@ function dbrest_get_event_card(WP_REST_Request $request)
 {
     $event_id = (int) $request->get_param('event_id');
     $event_record = internal_get_single_event_record($event_id);
+
     if (!$event_record || !isset($event_record['post_id'])) {
         return new WP_Error('not_found', 'Event not found', ['status' => 404]);
     }
 
     $post_id = (int) $event_record['post_id'];
-
     $post_metadata = internal_get_postmeta($post_id);
     $thumbnail_id = isset($post_metadata['_thumbnail_id']) ? (int) $post_metadata['_thumbnail_id'] : null;
 
@@ -390,26 +390,95 @@ function dbrest_get_event_card(WP_REST_Request $request)
         $thumbnail_post = internal_get_post_content($thumbnail_id);
         if ($thumbnail_post && isset($thumbnail_post['guid'])) {
             $thumbnail_source = $thumbnail_post['guid'];
-            $thumbnail_source = str_replace('\/', '/', $thumbnail_source);
-            $thumbnail_source = html_entity_decode($thumbnail_source, ENT_QUOTES | ENT_HTML5, 'UTF-8');
         }
     }
 
     $post_content = internal_get_post_content($post_id);
     $excerpt = $post_content && isset($post_content['post_excerpt']) ? $post_content['post_excerpt'] : '';
 
+    // Dates and times
+    $start_date = $event_record['event_start_date'] ?? null;
+    $end_date = $event_record['event_end_date'] ?? null;
+    $start_time = $event_record['event_start_time'] ?? null;
+    $end_time = $event_record['event_end_time'] ?? null;
+
+    // Format times as "HH:MM"
+    $start_time_fmt = $start_time ? substr($start_time, 0, 5) : null;
+    $end_time_fmt = $end_time ? substr($end_time, 0, 5) : null;
+
+    // Total seats and available seats
+    $tickets_template_for_event = internal_get_tickets_for_event($event_id);
+    $total_seats = 0;
+    if (!empty($tickets_template_for_event) && isset($tickets_template_for_event[0]->ticket_spaces)) {
+        $total_seats = (int) $tickets_template_for_event[0]->ticket_spaces;
+    }
+
+    $available_seats = null;
+    if ($total_seats !== null) {
+        $available_seats = $total_seats - (int)internal_get_event_booking_count($event_id);
+        if ($available_seats < 0) $available_seats = 0;
+    }
+
+    // Reservations opened
+    $reservations_opened = false;
+    if (isset($event_record['event_rsvp']) && $event_record['event_rsvp'] == 1) {
+        $reservations_opened = true;
+    }
+
+    // Spans weekend
+    $spans_weekend = false;
+    if ($start_date && $end_date) {
+        $period = new DatePeriod(
+            new DateTime($start_date),
+            new DateInterval('P1D'),
+            (new DateTime($end_date))->modify('+1 day')
+        );
+        foreach ($period as $dt) {
+            $weekday = (int)$dt->format('N'); // 6=Saturday, 7=Sunday
+            if ($weekday === 6 || $weekday === 7) {
+                $spans_weekend = true;
+                break;
+            }
+        }
+    }
+
+    // Whole day event
+    $whole_day = false;
+    if (
+        ($start_time === '00:00:00' || $start_time === null || $start_time === '') &&
+        ($end_time === '23:59:59' || $end_time === null || $end_time === '')
+    ) {
+        $whole_day = true;
+    }
+
     $results = [
         "event_card" => [
             "thumbnail_source" => $thumbnail_source,
+            "start_date" => $start_date,
+            "end_date" => $end_date,
+            "start_time" => $start_time_fmt,
+            "end_time" => $end_time_fmt,
+            "available_seats" => $available_seats,
+            "total_seats" => $total_seats,
+            "reservations_opened" => $reservations_opened,
             "excerpt" => $excerpt,
             "event_id" => $event_id,
-            "post_id" => $post_id
+            "post_id" => $post_id,
+            "spans_weekend" => $spans_weekend,
+            "whole_day" => $whole_day
         ]
     ];
 
     return rest_ensure_response($results);
 }
 
+// Add this helper to count current bookings
+function internal_get_event_booking_count(int $event_id) {
+    global $wpdb;
+    $bookings_table = $wpdb->prefix . 'em_bookings';
+    $sql = $wpdb->prepare("SELECT COUNT(*) FROM $bookings_table WHERE event_id = %d AND booking_status=1", $event_id);
+    return (int) $wpdb->get_var($sql);
+}
 
 // Returns one event row as associative array, or null
 function internal_get_single_event_record(int $event_id)
@@ -597,11 +666,9 @@ function dbrest_get_events_by_timeframe(WP_REST_Request $request)
 }
 
 
-// Retrieves event-tickets (meaning the ticket template used by an event to accept bookings)
-function dbrest_get_event_tickets(WP_REST_Request $request)
+function internal_get_tickets_for_event(int $event_id)
 {
     global $wpdb;
-    $event_id = $request->get_param('event_id');
     $table = $wpdb->prefix . 'em_tickets';
 
     // Prepare and execute the query safely
@@ -618,6 +685,15 @@ function dbrest_get_event_tickets(WP_REST_Request $request)
             }
         }
     }
+
+    return $results;
+}
+
+// Retrieves event-tickets (meaning the ticket template used by an event to accept bookings)
+function dbrest_get_event_tickets(WP_REST_Request $request)
+{
+    $event_id = $request->get_param('event_id');
+    $results = internal_get_tickets_for_event($event_id);
 
     return rest_ensure_response([
         "tickets" => $results,
