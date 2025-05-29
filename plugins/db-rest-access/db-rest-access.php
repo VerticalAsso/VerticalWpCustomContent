@@ -18,9 +18,6 @@ define('DB_REST_ACCESS_APIKEY_OPT_NAME', 'db_rest_access_apikey');
 // Include the settings page class
 require_once plugin_dir_path(__FILE__) . 'includes/admin-settings.php';
 
-// Register the REST API routes
-add_action('rest_api_init', 'register_rest_routes');
-
 add_action( 'admin_menu', 'add_php_info_page' );
 
 function add_php_info_page() {
@@ -41,62 +38,150 @@ function php_info_page_body() {
         echo $message;
     }
 }
-
 /**
- * @brief registers REST routes
+ * Register custom REST route for event queries with timeframe filtering.
  */
-function register_rest_routes()
+function register_events_rest_route()
 {
-    register_rest_route('dbrest/v1', '/table', [
+    register_rest_route('dbrest/v1', '/events', [
         'methods' => 'GET',
-        'callback' => 'db_rest_access_get_table',
+        'callback' => 'dbrest_get_events_by_timeframe',
         'permission_callback' => 'db_rest_access_verify_api_key',
         'args' => [
-            'name' => [
-                'required' => true,
-                'validate_callback' => 'check_table_name_arg_from_request'
-            ]
+            'timeframe' => [
+                'required' => false,
+                'validate_callback' => function($param) {
+                    return in_array($param, ['week', 'month', 'year', 'future', 'custom']);
+                }
+            ],
+            'start_date' => [
+                'required' => false,
+                'validate_callback' => function($param) {
+                    // Basic format check YYYY-MM-DD
+                    return preg_match('/^\d{4}-\d{2}-\d{2}/', $param);
+                }
+            ],
+            'end_date' => [
+                'required' => false,
+                'validate_callback' => function($param) {
+                    // Basic format check YYYY-MM-DD
+                    return preg_match('/^\d{4}-\d{2}-\d{2}/', $param);
+                }
+            ],
+            'limit' => [
+                'required' => false,
+                'default' => 100,
+                'validate_callback' => function($param) {
+                    return is_numeric($param) && $param > 0 && $param <= 500;
+                }
+            ],
+            'offset' => [
+                'required' => false,
+                'default' => 0,
+                'validate_callback' => function($param) {
+                    return is_numeric($param) && $param >= 0;
+                }
+            ],
         ]
     ]);
 }
+add_action('rest_api_init', 'register_events_rest_route');
 
-function check_table_name_arg_from_request(string $param)
-{
-    // Validate table name to prevent SQL injection
-    global $wpdb;
-    $table_name = $wpdb->prefix . sanitize_text_field($param);
-    return $wpdb->get_var("SHOW TABLES LIKE '$table_name'") === $table_name;
-}
-
-// REST API callback: Fetch data from the database
-function db_rest_access_get_table(WP_REST_Request $request)
+/**
+ * REST API callback: Fetch events filtered by timeframe.
+ */
+function dbrest_get_events_by_timeframe(WP_REST_Request $request)
 {
     global $wpdb;
+    $table = $wpdb->prefix . 'em_events'; // Adjust if your table name is different
 
-    // Get the table name from the query parameter
-    $table_name = $wpdb->prefix . sanitize_text_field($request->get_param('name'));
+    $where = "WHERE event_status = '1'";
+    $params = [];
 
-    // Get the optional custom SQL query
-    $custom_query = $request->get_param('custom_query');
+    // Timeframe handling
+    $timeframe = $request->get_param('timeframe');
+    $today = date('Y-m-d');
+    $now = date('Y-m-d H:i:s');
 
-    // If a custom query is provided, validate and use it
-    if (!empty($custom_query)) {
-        // Ensure the custom query doesn't contain harmful SQL (basic validation)
-        if (strpos(strtolower($custom_query), 'delete') !== false || strpos(strtolower($custom_query), 'update') !== false) {
-            return new WP_Error('forbidden', 'Custom SQL query contains forbidden operations.', ['status' => 403]);
-        }
-
-        // Execute the custom query
-        $results = $wpdb->get_results($custom_query);
+    switch ($timeframe) {
+        case 'week':
+            // Events starting this week (Monday to Sunday)
+            $start = date('Y-m-d', strtotime('monday this week'));
+            $end = date('Y-m-d', strtotime('sunday this week 23:59:59'));
+            $where .= " AND event_start_date >= %s AND event_start_date <= %s";
+            $params[] = $start . ' 00:00:00';
+            $params[] = $end . ' 23:59:59';
+            break;
+        case 'month':
+            // Events starting this month
+            $start = date('Y-m-01');
+            $end = date('Y-m-t');
+            $where .= " AND event_start_date >= %s AND event_start_date <= %s";
+            $params[] = $start . ' 00:00:00';
+            $params[] = $end . ' 23:59:59';
+            break;
+        case 'year':
+            // Events starting this year
+            $start = date('Y-01-01');
+            $end = date('Y-12-31');
+            $where .= " AND event_start_date >= %s AND event_start_date <= %s";
+            $params[] = $start . ' 00:00:00';
+            $params[] = $end . ' 23:59:59';
+            break;
+        case 'future':
+            // All future events
+            $where .= " AND event_start_date >= %s";
+            $params[] = $now;
+            break;
+        case 'custom':
+            // Use custom start_date and/or end_date
+            $start = $request->get_param('start_date');
+            $end = $request->get_param('end_date');
+            if ($start) {
+                $where .= " AND event_start_date >= %s";
+                $params[] = $start . (strlen($start) == 10 ? ' 00:00:00' : '');
+            }
+            if ($end) {
+                $where .= " AND event_start_date <= %s";
+                $params[] = $end . (strlen($end) == 10 ? ' 23:59:59' : '');
+            }
+            break;
+        default:
+            // If no timeframe provided, show future events
+            $where .= " AND event_start_date >= %s";
+            $params[] = $now;
+            break;
     }
-    else
-    {
-        // Default query: Select all rows from the table
-        //$results = $wpdb->get_results("SELECT * FROM $table_name LIMIT 10");
-        $results = $wpdb->get_results("SELECT * FROM $table_name");
-    }
 
-    return rest_ensure_response($results);
+    // Pagination
+    $limit = (int) $request->get_param('limit') ?: 100;
+    $offset = (int) $request->get_param('offset') ?: 0;
+
+    // Prepare SQL
+    $sql = "SELECT * FROM $table $where ORDER BY event_start_date DESC LIMIT %d OFFSET %d";
+    $params[] = $limit;
+    $params[] = $offset;
+
+    $prepared_sql = $wpdb->prepare($sql, ...$params);
+    $results = $wpdb->get_results($prepared_sql);
+
+    // Remove LIMIT/OFFSET for count query
+    $count_sql = "SELECT COUNT(*) FROM $table $where";
+    $total_events = (int) $wpdb->get_var($wpdb->prepare($count_sql, ...array_slice($params, 0, count($params) - 2)));
+
+    $count = count($results);
+    $total_pages = ($limit > 0) ? ceil($total_events / $limit) : 1;
+    $current_page = ($limit > 0) ? floor($offset / $limit) + 1 : 1;
+
+    $response = [
+        "events" => $results,
+        "count" => $count,
+        "total_events" => $total_events,
+        "total_pages" => $total_pages,
+        "current_page" => $current_page
+    ];
+
+    return rest_ensure_response($response);
 }
 
 // Verify the API key
