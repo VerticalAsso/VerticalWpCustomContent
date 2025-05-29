@@ -12,6 +12,11 @@ Version: 2.2
 
 /*************** ADD YOUR CUSTOM CSS IN THIS AREA ***************/
 
+/* Disable section "billet" et "information d'inscription */
+.em.em-event-booking-form h3.em-booking-section-title {
+  display: none;
+}
+
 #masthead {
 	border-bottom: 3px solid #84be68;
 }
@@ -121,7 +126,7 @@ Version: 2.2
 .ecs-event {
 	clear: both;
 	margin-top: 20px;
-	
+
 }
 
 .evt-date, .img-evt, .desc-evt {
@@ -130,7 +135,7 @@ Version: 2.2
 #block-evenements{
     background: url(./images/background.png) no-repeat fixed center !important;
 	-webkit-background-size: cover; /* pour anciens Chrome et Safari */
-  background-size: cover; /* version standardisée */
+  background-size: cover; /* version standardisï¿½e */
 }
 
 .evt-date {
@@ -198,7 +203,7 @@ Version: 2.2
 
 .evnt {
 	margin: 20px 0 !important;
-	
+
 }
 
 .evnt .columns {
@@ -543,49 +548,49 @@ div.em-booking-login {
 }
 
 @media only screen and (max-width: 48em) {
-	
+
 	.lien-evt {
 		margin: 10px 20px !important;
 	}
-	
+
 	.desc-evt {
 		border-top-right-radius: 0px !important;
 		border-bottom-right-radius: 0px !important;
 	}
-	
+
 	.desc-evt .entry-title  {
 		margin-top: 1em !important;
 		margin-bottom: 1em !important;
 	}
-	
+
 	.mobile-menu {
 		position : relative !important;
 		top: -50px !important;
 	}
-	
+
 	.tribe-events-list .tribe-events-loop .tribe-events-content {
 		max-width: 100% !important;
 	}
-	
+
 	.listevt .large-4 {
 		padding-right: 15px;
 	}
-	
-	
-	
+
+
+
 	.listevt .large-8  {
 		background: none;
 	}
-	
+
 	.listevt .large-8  table {
 		background: #fff;
 	}
-	
+
 	.listevt .large-8 table td {
 		padding-left: 10px;
 		padding-right: 10px;
 	}
-	
-	
+
+
 
 }
