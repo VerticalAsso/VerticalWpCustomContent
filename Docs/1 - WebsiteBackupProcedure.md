@@ -15,6 +15,9 @@ But this is sequential, whether this command is far more efficient (and works li
 # lftp sftp://{user}:{password}@{server} -e 'mirror --verbose --use-pget-n=8 -c . . --parallel'
 lftp sftp://verticalws:<password>@ftp.cluster011.hosting.ovh.net -e 'mirror --verbose --use-pget-n=8 -c . . --parallel'
 
+# Excluding already backed-up content can really help performances gain :
+lftp sftp://verticalws:<password>@ftp.cluster011.hosting.ovh.net -e 'mirror --exclude www/wp-content/backupwordpress-39a05d414f-backups  --verbose --use-pget-n=8 -c . . --parallel'
+
 #or simply
 lftp sftp://verticalws@ftp.cluster011.hosting.ovh.net
 # Then from the shell :
@@ -36,3 +39,9 @@ We're already doing a backup, so ditch this directory.
 In the gallery (`www/wp-content/gallery`), wordpress automatically backs up *.jpg files.
 Remove all *_backup files found in the gallery folder with tools such as a file explorer, using the search bar (search for "_backup", select all, delete).
 
+
+# Database backup
+Database dumps can be performed via 2 (in facts 3) tools.
+* from [OVH database panel](https://www.ovh.com/manager/#/web/hosting/vertical-asso.fr/database) -> "Créer une sauvegarde" and "Download"
+* from [phpMyAdmin](https://phpmyadmin-gra2.hosting.ovh.net/) (but dumps are not directly restorable on an existing database, you'll need to start from scratch)
+* from our WordPress WPBackupPlugin configuration panel.
