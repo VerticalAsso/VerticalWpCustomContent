@@ -1,4 +1,5 @@
 <?php
+
 /**
  * Plugin Name: Database REST Access
  * Description: A plugin to provide REST API routes for querying custom database tables with an API key. It might also be used to write some data within the database itself
@@ -18,21 +19,24 @@ define('DB_REST_ACCESS_APIKEY_OPT_NAME', 'db_rest_access_apikey');
 // Include the settings page class
 require_once plugin_dir_path(__FILE__) . 'includes/admin-settings.php';
 
-add_action( 'admin_menu', 'add_php_info_page' );
+add_action('admin_menu', 'add_php_info_page');
 
-function add_php_info_page() {
+function add_php_info_page()
+{
     add_submenu_page(
         'tools.php',           // Parent page
         'Xdebug Info',         // Menu title
         'Xdebug Info',         // Page title
         'manage_options',      // user "role"
         'php-info-page',       // page slug
-        'php_info_page_body'); // callback function
+        'php_info_page_body'
+    ); // callback function
 }
 
-function php_info_page_body() {
+function php_info_page_body()
+{
     $message = '<h2>No Xdebug enabled</h2>';
-    if ( function_exists( 'xdebug_info' ) ) {
+    if (function_exists('xdebug_info')) {
         xdebug_info();
     } else {
         echo $message;
@@ -79,20 +83,20 @@ function register_events_rest_route()
         'args' => [
             'timeframe' => [
                 'required' => false,
-                'validate_callback' => function($param) {
+                'validate_callback' => function ($param) {
                     return in_array($param, ['week', 'month', 'year', 'future', 'custom']);
                 }
             ],
             'start_date' => [
                 'required' => false,
-                'validate_callback' => function($param) {
+                'validate_callback' => function ($param) {
                     // Basic format check YYYY-MM-DD
                     return preg_match('/^\d{4}-\d{2}-\d{2}/', $param);
                 }
             ],
             'end_date' => [
                 'required' => false,
-                'validate_callback' => function($param) {
+                'validate_callback' => function ($param) {
                     // Basic format check YYYY-MM-DD
                     return preg_match('/^\d{4}-\d{2}-\d{2}/', $param);
                 }
@@ -100,20 +104,19 @@ function register_events_rest_route()
             'limit' => [
                 'required' => false,
                 'default' => 100,
-                'validate_callback' => function($param) {
+                'validate_callback' => function ($param) {
                     return is_numeric($param) && $param > 0 && $param <= 500;
                 }
             ],
             'offset' => [
                 'required' => false,
                 'default' => 0,
-                'validate_callback' => function($param) {
+                'validate_callback' => function ($param) {
                     return is_numeric($param) && $param >= 0;
                 }
             ],
         ]
     ]);
-
 }
 add_action('rest_api_init', 'register_events_rest_route');
 
@@ -149,7 +152,8 @@ add_action('rest_api_init', 'register_events_rest_route');
  *         "event_id": 123
  *     }
  */
-function register_event_tickets_route() {
+function register_event_tickets_route()
+{
     register_rest_route('dbrest/v1', '/event-tickets', [
         'methods' => 'GET',
         'callback' => 'dbrest_get_event_tickets',
@@ -157,7 +161,7 @@ function register_event_tickets_route() {
         'args' => [
             'event_id' => [
                 'required' => true,
-                'validate_callback' => function($param) {
+                'validate_callback' => function ($param) {
                     return is_numeric($param) && $param > 0;
                 }
             ]
@@ -205,7 +209,8 @@ add_action('rest_api_init', 'register_event_tickets_route');
  *         "filter_status": "validated"
  *     }
  */
-function register_event_bookings_route() {
+function register_event_bookings_route()
+{
     register_rest_route('dbrest/v1', '/event-bookings', [
         'methods' => 'GET',
         'callback' => 'dbrest_get_event_bookings',
@@ -213,13 +218,13 @@ function register_event_bookings_route() {
         'args' => [
             'event_id' => [
                 'required' => true,
-                'validate_callback' => function($param) {
+                'validate_callback' => function ($param) {
                     return is_numeric($param) && $param > 0;
                 }
             ],
             'status' => [
                 'required' => false,
-                'validate_callback' => function($param) {
+                'validate_callback' => function ($param) {
                     return in_array($param, ['all', 'validated']);
                 },
                 'default' => 'validated'
@@ -262,7 +267,8 @@ add_action('rest_api_init', 'register_event_bookings_route');
  *         "post_id": 456
  *     }
  */
-function register_postmeta_route() {
+function register_postmeta_route()
+{
     register_rest_route('dbrest/v1', '/postmeta', [
         'methods' => 'GET',
         'callback' => 'dbrest_get_postmeta',
@@ -270,7 +276,7 @@ function register_postmeta_route() {
         'args' => [
             'post_id' => [
                 'required' => true,
-                'validate_callback' => function($param) {
+                'validate_callback' => function ($param) {
                     return is_numeric($param) && $param > 0;
                 }
             ]
@@ -310,7 +316,8 @@ add_action('rest_api_init', 'register_postmeta_route');
  *         "post_id": "17258"
  *     }
  */
-function register_post_content_route() {
+function register_post_content_route()
+{
     register_rest_route('dbrest/v1', '/post', [
         'methods' => 'GET',
         'callback' => 'dbrest_get_post_content',
@@ -318,7 +325,7 @@ function register_post_content_route() {
         'args' => [
             'post_id' => [
                 'required' => true,
-                'validate_callback' => function($param) {
+                'validate_callback' => function ($param) {
                     return is_numeric($param) && $param > 0;
                 }
             ]
@@ -328,12 +335,107 @@ function register_post_content_route() {
 add_action('rest_api_init', 'register_post_content_route');
 
 
+/**
+ * @api {get} /wp-json/dbrest/v1/event-card Get event card data
+ * @apiName GetEventCard
+ * @apiGroup Events
+ *
+ * @apiDescription
+ * Retrieve the card data for an event, including excerpt, thumbnail source, event ID, and post ID.
+ *
+ * @apiParam {Number} event_id The ID of the event (required).
+ *
+ * @apiSuccess {Object} event_card The event card info.
+ * @apiSuccess {String} event_card.thumbnail_source The URL of the event's thumbnail.
+ * @apiSuccess {String} event_card.excerpt The post excerpt.
+ * @apiSuccess {Number} event_card.event_id The event ID.
+ * @apiSuccess {Number} event_card.post_id The post ID.
+ *
+ * @apiExample {curl} Example usage:
+ *     curl -X GET "https://yourdomain.com/wp-json/dbrest/v1/event-card?event_id=1234"
+ */
+function register_event_card_route()
+{
+    register_rest_route('dbrest/v1', '/event-card', [
+        'methods' => 'GET',
+        'callback' => 'dbrest_get_event_card',
+        'permission_callback' => 'db_rest_access_verify_api_key',
+        'args' => [
+            'event_id' => [
+                'required' => true,
+                'validate_callback' => function ($param) {
+                    return is_numeric($param) && $param > 0;
+                }
+            ]
+        ]
+    ]);
+}
+add_action('rest_api_init', 'register_event_card_route');
 
-function dbrest_get_post_content(WP_REST_Request $request) {
+function dbrest_get_event_card(WP_REST_Request $request)
+{
+    $event_id = (int) $request->get_param('event_id');
+    $event_record = internal_get_single_event_record($event_id);
+    if (!$event_record || !isset($event_record['post_id'])) {
+        return new WP_Error('not_found', 'Event not found', ['status' => 404]);
+    }
+
+    $post_id = (int) $event_record['post_id'];
+
+    $post_metadata = internal_get_postmeta($post_id);
+    $thumbnail_id = isset($post_metadata['_thumbnail_id']) ? (int) $post_metadata['_thumbnail_id'] : null;
+
+    $thumbnail_source = null;
+    if ($thumbnail_id) {
+        $thumbnail_post = internal_get_post_content($thumbnail_id);
+        if ($thumbnail_post && isset($thumbnail_post['guid'])) {
+            $thumbnail_source = $thumbnail_post['guid'];
+            $thumbnail_source = str_replace('\/', '/', $thumbnail_source);
+            $thumbnail_source = html_entity_decode($thumbnail_source, ENT_QUOTES | ENT_HTML5, 'UTF-8');
+        }
+    }
+
+    $post_content = internal_get_post_content($post_id);
+    $excerpt = $post_content && isset($post_content['post_excerpt']) ? $post_content['post_excerpt'] : '';
+
+    $results = [
+        "event_card" => [
+            "thumbnail_source" => $thumbnail_source,
+            "excerpt" => $excerpt,
+            "event_id" => $event_id,
+            "post_id" => $post_id
+        ]
+    ];
+
+    return rest_ensure_response($results);
+}
+
+
+// Returns one event row as associative array, or null
+function internal_get_single_event_record(int $event_id)
+{
     global $wpdb;
-    $post_id = $request->get_param('post_id');
-    $table = $wpdb->prefix . 'posts'; // Adjust if your table prefix is different
+    $table = $wpdb->prefix . 'em_events';
+    $event = $wpdb->get_row(
+        $wpdb->prepare("SELECT * FROM $table WHERE event_id = %d", $event_id),
+        ARRAY_A
+    );
+    return $event ?: null;
+}
 
+
+function dbrest_get_post_content(WP_REST_Request $request)
+{
+    $post_id = $request->get_param('post_id');
+    $result = internal_get_post_content($post_id);
+    return rest_ensure_response($result);
+}
+
+// Returns post row as associative array, or null
+function internal_get_post_content(int $post_id)
+{
+    global $wpdb;
+    $table = $wpdb->prefix . 'posts';
     $row = $wpdb->get_row(
         $wpdb->prepare(
             "SELECT * FROM $table WHERE ID = %d",
@@ -341,15 +443,7 @@ function dbrest_get_post_content(WP_REST_Request $request) {
         ),
         ARRAY_A
     );
-
-    if (!$row) {
-        return new WP_Error('not_found', 'Post not found', ['status' => 404]);
-    }
-
-    return rest_ensure_response([
-        "post" => $row,
-        "post_id" => $post_id
-    ]);
+    return $row ?: null;
 }
 
 
@@ -380,35 +474,31 @@ function normalize_um_roles($value)
 
 function dbrest_get_postmeta(WP_REST_Request $request)
 {
-    global $wpdb;
     $post_id = $request->get_param('post_id');
-    $table = $wpdb->prefix . 'postmeta';
 
+    $results = internal_get_postmeta($post_id);
+    return rest_ensure_response($results);
+}
+
+// Returns associative array of meta_key => meta_value (unserialized)
+function internal_get_postmeta(int $post_id)
+{
+    global $wpdb;
+    $table = $wpdb->prefix . 'postmeta';
     $results = $wpdb->get_results(
         $wpdb->prepare(
             "SELECT meta_key, meta_value FROM $table WHERE post_id = %d",
             $post_id
         ),
-        ARRAY_A // get associative arrays
+        ARRAY_A
     );
-
     $meta_dict = [];
     foreach ($results as $row) {
         $key = $row['meta_key'];
-        $value = @maybe_unserialize($row['meta_value']);
-
-        // Optionally use maybe_unserialize() for better compatibility
-        if ($value === false && $row['meta_value'] !== 'b:0;') {
-            $value = $row['meta_value'];
-        }
-
-        $meta_dict[$key] = normalize_um_roles($value);
+        $value = maybe_unserialize($row['meta_value']);
+        $meta_dict[$key] = $value;
     }
-
-    return rest_ensure_response([
-        "meta" => $meta_dict,
-        "post_id" => $post_id
-    ]);
+    return $meta_dict;
 }
 
 
@@ -506,8 +596,10 @@ function dbrest_get_events_by_timeframe(WP_REST_Request $request)
     return rest_ensure_response($response);
 }
 
+
 // Retrieves event-tickets (meaning the ticket template used by an event to accept bookings)
-function dbrest_get_event_tickets(WP_REST_Request $request) {
+function dbrest_get_event_tickets(WP_REST_Request $request)
+{
     global $wpdb;
     $event_id = $request->get_param('event_id');
     $table = $wpdb->prefix . 'em_tickets';
@@ -535,7 +627,8 @@ function dbrest_get_event_tickets(WP_REST_Request $request) {
 }
 
 // Retrieves all bookings for a given event
-function dbrest_get_event_bookings(WP_REST_Request $request) {
+function dbrest_get_event_bookings(WP_REST_Request $request)
+{
     global $wpdb;
     $event_id = $request->get_param('event_id');
     $status = $request->get_param('status');
@@ -550,7 +643,8 @@ function dbrest_get_event_bookings(WP_REST_Request $request) {
     } else { // validated only
         $query = $wpdb->prepare(
             "SELECT * FROM $table WHERE event_id = '%d' AND booking_status = '1'",
-            $event_id, '1'
+            $event_id,
+            '1'
         );
     }
 
@@ -578,7 +672,8 @@ function dbrest_get_event_bookings(WP_REST_Request $request) {
 
 
 // Verify the API key
-function db_rest_access_verify_api_key(WP_REST_Request $request) {
+function db_rest_access_verify_api_key(WP_REST_Request $request)
+{
     // Get the API key from the headers
     $api_key = $request->get_header('X-Api-Key');
 
@@ -587,8 +682,7 @@ function db_rest_access_verify_api_key(WP_REST_Request $request) {
     $stored_api_key = isset($options['api_key']) ? $options['api_key'] : '';
 
     // Reject queries when ApiKey is not there yet
-    if(empty($stored_api_key))
-    {
+    if (empty($stored_api_key)) {
         return new WP_Error(
             'Internal Server Error',
             'Plugin is not yet configured',
@@ -613,7 +707,7 @@ register_activation_hook(__FILE__, function () {
     if (!get_option(DB_REST_ACCESS_APIKEY_OPT_NAME)) {
         // Generate default ApiKey
         // Borrowed from https://stackoverflow.com/a/37193149/8716917
-        $key = implode('-', str_split(substr(strtolower(md5(microtime().rand(1000, 9999))), 0, 30), 6));
+        $key = implode('-', str_split(substr(strtolower(md5(microtime() . rand(1000, 9999))), 0, 30), 6));
         update_option(DB_REST_ACCESS_APIKEY_OPT_NAME, ['api_key' => $key]);
     }
 });
