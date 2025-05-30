@@ -1,10 +1,15 @@
 <?php
+namespace DbRestAccess\Admin;
+
 // Prevent direct access to the file
 if (!defined('ABSPATH')) {
     exit;
 }
 
-class DB_Rest_Access_Settings {
+/**
+ * Admin settings data structure
+ */
+class Settings {
     public function __construct() {
         add_action('admin_menu', [$this, 'add_admin_menu']);
         add_action('admin_init', [$this, 'register_settings']);
@@ -69,4 +74,4 @@ class DB_Rest_Access_Settings {
 }
 
 // Initialize the settings class
-new DB_Rest_Access_Settings();
+new Settings();
