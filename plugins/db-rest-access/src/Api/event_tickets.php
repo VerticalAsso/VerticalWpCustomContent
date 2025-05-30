@@ -1,6 +1,8 @@
 <?php
 
 namespace DbRestAccess\Api;
+require_once __DIR__ . '/../Auth/apikey_checking.php';
+
 
 use WP_REST_Request;
 
@@ -54,14 +56,7 @@ function register_event_tickets_route()
         ]
     ]);
 }
-add_action('rest_api_init', __NAMESPACE__ . '\\register_event_tickets_route');
 
-/**
- * Validate that event_id is a positive integer.
- */
-function validate_event_id($param): bool {
-    return is_numeric($param) && $param > 0;
-}
 
 /**
  * Retrieves event-tickets (meaning the ticket template used by an event to accept bookings)

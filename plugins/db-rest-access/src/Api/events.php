@@ -1,6 +1,8 @@
 <?php
 
 namespace DbRestAccess\Api;
+require_once __DIR__ . '/../Auth/apikey_checking.php';
+
 
 use WP_REST_Request;
 
@@ -69,7 +71,6 @@ function register_events_route()
         ]
     ]);
 }
-add_action('rest_api_init', __NAMESPACE__ . '\\register_events_route');
 
 /**
  * Callback for the /events endpoint.

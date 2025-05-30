@@ -4,7 +4,7 @@
     "license": "MIT",
     "autoload": {
         "psr-4": {
-            "Bebenlebricolo\\DbRestAccess\\": "Src/"
+            "DbRestAccess\\": "src/"
         }
     },
     "authors": [

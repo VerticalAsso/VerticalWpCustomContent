@@ -20,3 +20,15 @@ RUN pecl install xdebug \
     && echo "xdebug.client_port = 9003" >> $XDEBUG_INI \
     && echo "xdebug.client_host = 'host.docker.internal'" >> $XDEBUG_INI \
     && echo "xdebug.log = /tmp/xdebug.log" >> $XDEBUG_INI
+
+RUN apt-get update -y
+RUN apt-get install -y  \
+    curl                \
+    php-cli             \
+    php-mbstring        \
+    git                 \
+    unzip
+
+WORKDIR /tmp
+RUN curl -sS https://getcomposer.org/installer -o composer-setup.php
+RUN php composer-setup.php --install-dir=/usr/local/bin --filename=composer

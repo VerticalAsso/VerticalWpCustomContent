@@ -1,6 +1,8 @@
 <?php
 
 namespace DbRestAccess\Api;
+require_once __DIR__ . '/../Auth/apikey_checking.php';
+
 
 use WP_REST_Request;
 use WP_Error;
@@ -9,6 +11,7 @@ use WP_Error;
 if (! defined('ABSPATH')) {
     exit;
 }
+
 
 /**
  * @api {get} /wp-json/dbrest/v1/event-card Get event card data
@@ -42,7 +45,6 @@ function register_event_card_route() {
         ]
     ]);
 }
-add_action('rest_api_init', __NAMESPACE__ . '\\register_event_card_route');
 
 /**
  * Validate that event_id is a positive integer.

@@ -29,5 +29,3 @@ function php_info_page_body()
         echo $message;
     }
 }
-
-add_action('admin_menu', 'add_php_info_page');
