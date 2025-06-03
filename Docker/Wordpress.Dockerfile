@@ -1,5 +1,6 @@
 # Start from the official WordPress image
-FROM wordpress:latest
+# FROM wordpress:latest
+FROM wordpress:6.8.1-php8.4-apache
 
 # Copy your wp-content folder into the image
 COPY BackedUpContent/wp-content     /var/www/html/wp-content
@@ -21,14 +22,5 @@ RUN pecl install xdebug \
     && echo "xdebug.client_host = 'host.docker.internal'" >> $XDEBUG_INI \
     && echo "xdebug.log = /tmp/xdebug.log" >> $XDEBUG_INI
 
-RUN apt-get update -y
-RUN apt-get install -y  \
-    curl                \
-    php-cli             \
-    php-mbstring        \
-    git                 \
-    unzip
-
-WORKDIR /tmp
-RUN curl -sS https://getcomposer.org/installer -o composer-setup.php
-RUN php composer-setup.php --install-dir=/usr/local/bin --filename=composer
+RUN curl -sS https://getcomposer.org/installer -o /tmp/composer-setup.php
+RUN php /tmp/composer-setup.php --install-dir=/usr/local/bin --filename=composer
