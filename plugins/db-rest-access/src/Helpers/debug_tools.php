@@ -4,7 +4,8 @@ namespace DbRestAccess\Helpers;
 
 
 // Prevent direct access to the file
-if (!defined('ABSPATH')) {
+if (!defined('ABSPATH'))
+{
     exit;
 }
 
@@ -23,9 +24,12 @@ function add_php_info_page()
 function php_info_page_body()
 {
     $message = '<h2>No Xdebug enabled</h2>';
-    if (function_exists('xdebug_info')) {
+    if (function_exists('xdebug_info'))
+    {
         xdebug_info();
-    } else {
+    }
+    else
+    {
         echo $message;
     }
 }

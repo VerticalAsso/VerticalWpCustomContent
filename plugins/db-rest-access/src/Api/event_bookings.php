@@ -1,12 +1,15 @@
 <?php
+
 namespace DbRestAccess\Api;
+
 require_once __DIR__ . '/../Auth/apikey_checking.php';
 
 
 use WP_REST_Request;
 
 // Prevent direct access
-if (! defined('ABSPATH')) {
+if (! defined('ABSPATH'))
+{
     exit;
 }
 
@@ -59,13 +62,15 @@ function register_event_bookings_route()
         'args' => [
             'event_id' => [
                 'required' => true,
-                'validate_callback' => function ($param) {
+                'validate_callback' => function ($param)
+                {
                     return is_numeric($param) && $param > 0;
                 }
             ],
             'status' => [
                 'required' => false,
-                'validate_callback' => function ($param) {
+                'validate_callback' => function ($param)
+                {
                     return in_array($param, ['all', 'validated']);
                 },
                 'default' => 'validated'
@@ -77,18 +82,39 @@ function register_event_bookings_route()
 // Retrieves all bookings for a given event
 function get_event_bookings(WP_REST_Request $request)
 {
-    global $wpdb;
     $event_id = $request->get_param('event_id');
     $status = $request->get_param('status');
+
+    $results = internal_get_bookings_for_event($event_id, $status);
+
+    return rest_ensure_response([
+        "bookings" => $results,
+        "count" => count($results),
+        "event_id" => $event_id,
+        "filter_status" => $status
+    ]);
+}
+
+/**
+ * @brief retrieves the list of bookings for a single event
+ * @param event_id : id of the event (positive integer)
+ * @param status : optional, use "all" or "validated" to select the bookings filter
+ */
+function internal_get_bookings_for_event(int $event_id, string $status = "validated")
+{
+    global $wpdb;
     $table = $wpdb->prefix . 'em_bookings'; // Adjust if your table prefix is different
 
     // Build the query depending on status
-    if ($status === 'all') {
+    if ($status === 'all')
+    {
         $query = $wpdb->prepare(
             "SELECT * FROM $table WHERE event_id = %d",
             $event_id
         );
-    } else { // validated only
+    }
+    else
+    { // validated only
         $query = $wpdb->prepare(
             "SELECT * FROM $table WHERE event_id = '%d' AND booking_status = '1'",
             $event_id,
@@ -100,20 +126,17 @@ function get_event_bookings(WP_REST_Request $request)
 
 
     // Unwrap the PHP serialized array so that it'll be easier for consummer code later on to handle it.
-    foreach ($results as &$row) {
-        if (isset($row->booking_meta)) {
+    foreach ($results as &$row)
+    {
+        if (isset($row->booking_meta))
+        {
             $meta = @unserialize($row->booking_meta);
-            if ($meta !== false && is_array($meta)) {
+            if ($meta !== false && is_array($meta))
+            {
                 $row->booking_meta = $meta;
             }
         }
     }
 
-
-    return rest_ensure_response([
-        "bookings" => $results,
-        "count" => count($results),
-        "event_id" => $event_id,
-        "filter_status" => $status
-    ]);
+    return $results;
 }

@@ -1,6 +1,7 @@
 <?php
 
 namespace DbRestAccess\Api;
+
 require_once __DIR__ . '/../Auth/apikey_checking.php';
 
 
@@ -8,7 +9,8 @@ use WP_REST_Request;
 use WP_Error;
 
 // Prevent direct access
-if (! defined('ABSPATH')) {
+if (! defined('ABSPATH'))
+{
     exit;
 }
 
@@ -32,7 +34,8 @@ if (! defined('ABSPATH')) {
  * @apiExample {curl} Example usage:
  *     curl -X GET "https://yourdomain.com/wp-json/dbrest/v1/event-card?event_id=1234"
  */
-function register_event_card_route() {
+function register_event_card_route()
+{
     register_rest_route('dbrest/v1', '/event-card', [
         'methods'             => 'GET',
         'callback'            => __NAMESPACE__ . '\\get_event_card',
@@ -49,18 +52,29 @@ function register_event_card_route() {
 /**
  * Validate that event_id is a positive integer.
  */
-function validate_event_id($param): bool {
+function validate_event_id($param): bool
+{
     return is_numeric($param) && $param > 0;
 }
 
 /**
  * Handles the event card REST API endpoint.
  */
-function get_event_card(WP_REST_Request $request) {
+function get_event_card(WP_REST_Request $request)
+{
     $event_id = (int) $request->get_param('event_id');
+
+    $result = internal_get_event_card($event_id);
+    return rest_ensure_response($result);
+}
+
+
+function internal_get_event_card(int $event_id)
+{
     $event_record = internal_get_single_event_record($event_id);
 
-    if (!$event_record || !isset($event_record['post_id'])) {
+    if (!$event_record || !isset($event_record['post_id']))
+    {
         return new WP_Error('not_found', 'Event not found', ['status' => 404]);
     }
 
@@ -68,13 +82,7 @@ function get_event_card(WP_REST_Request $request) {
     $post_metadata = internal_get_postmeta($post_id);
     $thumbnail_id = isset($post_metadata['_thumbnail_id']) ? (int) $post_metadata['_thumbnail_id'] : null;
 
-    $thumbnail_source = null;
-    if ($thumbnail_id) {
-        $thumbnail_post = internal_get_post_content($thumbnail_id);
-        if ($thumbnail_post && isset($thumbnail_post['guid'])) {
-            $thumbnail_source = $thumbnail_post['guid'];
-        }
-    }
+    $thumbnail_source = internal_get_event_thumbnail($thumbnail_id);
 
     $post_content = internal_get_post_content($post_id);
     $excerpt = $post_content && isset($post_content['post_excerpt']) ? $post_content['post_excerpt'] : '';
@@ -92,30 +100,36 @@ function get_event_card(WP_REST_Request $request) {
     // Total seats and available seats
     $tickets_template_for_event = internal_get_tickets_for_event($event_id);
     $total_seats = 0;
-    if (!empty($tickets_template_for_event) && isset($tickets_template_for_event[0]->ticket_spaces)) {
+    if (!empty($tickets_template_for_event) && isset($tickets_template_for_event[0]->ticket_spaces))
+    {
         $total_seats = (int) $tickets_template_for_event[0]->ticket_spaces;
     }
 
     $available_seats = null;
-    if ($total_seats !== null) {
+    if ($total_seats !== null)
+    {
         $available_seats = $total_seats - (int)internal_get_event_booking_count($event_id);
         if ($available_seats < 0) $available_seats = 0;
     }
 
     // Reservations opened
     $reservations_opened = !empty($event_record['event_rsvp']) && $event_record['event_rsvp'] == 1;
+    $title = $event_record['event_name'];
 
     // Spans weekend
     $spans_weekend = false;
-    if ($start_date && $end_date) {
+    if ($start_date && $end_date)
+    {
         $period = new \DatePeriod(
             new \DateTime($start_date),
             new \DateInterval('P1D'),
             (new \DateTime($end_date))->modify('+1 day')
         );
-        foreach ($period as $dt) {
+        foreach ($period as $dt)
+        {
             $weekday = (int)$dt->format('N'); // 6=Saturday, 7=Sunday
-            if ($weekday === 6 || $weekday === 7) {
+            if ($weekday === 6 || $weekday === 7)
+            {
                 $spans_weekend = true;
                 break;
             }
@@ -129,30 +143,30 @@ function get_event_card(WP_REST_Request $request) {
     );
 
     $results = [
-        "event_card" => [
-            "thumbnail_source"    => $thumbnail_source,
-            "start_date"          => $start_date,
-            "end_date"            => $end_date,
-            "start_time"          => $start_time_fmt,
-            "end_time"            => $end_time_fmt,
-            "available_seats"     => $available_seats,
-            "total_seats"         => $total_seats,
-            "reservations_opened" => $reservations_opened,
-            "excerpt"             => $excerpt,
-            "event_id"            => $event_id,
-            "post_id"             => $post_id,
-            "spans_weekend"       => $spans_weekend,
-            "whole_day"           => $whole_day
-        ]
+        "title" => $title,
+        "thumbnail_source"    => $thumbnail_source,
+        "start_date"          => $start_date,
+        "end_date"            => $end_date,
+        "start_time"          => $start_time_fmt,
+        "end_time"            => $end_time_fmt,
+        "available_seats"     => $available_seats,
+        "total_seats"         => $total_seats,
+        "reservations_opened" => $reservations_opened,
+        "excerpt"             => $excerpt,
+        "event_id"            => $event_id,
+        "post_id"             => $post_id,
+        "spans_weekend"       => $spans_weekend,
+        "whole_day"           => $whole_day
     ];
 
-    return rest_ensure_response($results);
+    return $results;
 }
 
 /**
  * Helper: Count current bookings for an event.
  */
-function internal_get_event_booking_count(int $event_id) {
+function internal_get_event_booking_count(int $event_id)
+{
     global $wpdb;
     $bookings_table = $wpdb->prefix . 'em_bookings';
     $sql = $wpdb->prepare("SELECT COUNT(*) FROM $bookings_table WHERE event_id = %d AND booking_status=1", $event_id);
@@ -169,4 +183,22 @@ function internal_get_single_event_record(int $event_id)
         ARRAY_A
     );
     return $event ?: null;
+}
+
+/**
+ * @brief Retrieves event's thumbnail from database
+ */
+function internal_get_event_thumbnail(int $thumbnail_id)
+{
+    $thumbnail_source = null;
+    if ($thumbnail_id)
+    {
+        $thumbnail_post = internal_get_post_content($thumbnail_id);
+        if ($thumbnail_post && isset($thumbnail_post['guid']))
+        {
+            $thumbnail_source = $thumbnail_post['guid'];
+        }
+    }
+
+    return $thumbnail_source;
 }
