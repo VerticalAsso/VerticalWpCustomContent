@@ -9,6 +9,8 @@ require_once __DIR__ . '/post_meta.php';
 require_once __DIR__ . '/events.php';
 require_once __DIR__ . '/user.php';
 require_once __DIR__ . '/user_meta.php';
+require_once __DIR__ . '/comments.php';
+require_once __DIR__ . '/event_location.php';
 
 /**
  * @brief registers all REST API routes upon activation.
@@ -24,4 +26,6 @@ function register_all_routes() {
     register_event_bookings_route();
     register_user_route();
     register_user_metadata_route();
+    register_comments_route();
+    register_event_location_route();
 }
