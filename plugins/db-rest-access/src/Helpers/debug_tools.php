@@ -16,7 +16,7 @@ function add_php_info_page()
         'Xdebug Info',         // Page title
         'manage_options',      // user "role"
         'php-info-page',       // page slug
-        'php_info_page_body'
+        __NAMESPACE__ . '\\php_info_page_body'
     ); // callback function
 }
 
