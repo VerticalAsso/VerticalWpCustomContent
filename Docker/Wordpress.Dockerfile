@@ -17,10 +17,13 @@ RUN pecl install xdebug \
     && docker-php-ext-enable xdebug \
     && echo "[xdebug]" > $XDEBUG_INI \
     && echo "xdebug.mode = debug" >> $XDEBUG_INI \
-    && echo "xdebug.start_with_request = trigger" >> $XDEBUG_INI \
+    && echo "xdebug.start_with_request = yes" >> $XDEBUG_INI \
     && echo "xdebug.client_port = 9003" >> $XDEBUG_INI \
     && echo "xdebug.client_host = 'host.docker.internal'" >> $XDEBUG_INI \
-    && echo "xdebug.log = /tmp/xdebug.log" >> $XDEBUG_INI
+    && echo "xdebug.log = /var/log/xdebug.log" >> $XDEBUG_INI
+
+RUN touch /var/log/xdebug.log && chmod 666 /var/log/xdebug.log
+RUN chown -R www-data:www-data /var/log
 
 RUN curl -sS https://getcomposer.org/installer -o /tmp/composer-setup.php
 RUN php /tmp/composer-setup.php --install-dir=/usr/local/bin --filename=composer
