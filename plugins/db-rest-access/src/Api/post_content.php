@@ -1,13 +1,15 @@
 <?php
 
 namespace DbRestAccess\Api;
+
 require_once __DIR__ . '/../Auth/apikey_checking.php';
 
 
 use WP_REST_Request;
 
 // Prevent direct access
-if (! defined('ABSPATH')) {
+if (! defined('ABSPATH'))
+{
     exit;
 }
 

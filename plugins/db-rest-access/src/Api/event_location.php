@@ -39,7 +39,8 @@ function register_event_location_route()
 /**
  * Validate that location_id is a positive integer.
  */
-function validate_location_id($param): bool {
+function validate_location_id($param): bool
+{
     return is_numeric($param) && $param > 0;
 }
 

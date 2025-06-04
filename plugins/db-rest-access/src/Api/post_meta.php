@@ -1,13 +1,15 @@
 <?php
 
 namespace DbRestAccess\Api;
+
 require_once __DIR__ . '/../Auth/apikey_checking.php';
 
 
 use WP_REST_Request;
 
 // Prevent direct access
-if (! defined('ABSPATH')) {
+if (! defined('ABSPATH'))
+{
     exit;
 }
 
@@ -61,7 +63,8 @@ function register_postmeta_route()
 /**
  * Validate that post_id is a positive integer.
  */
-function validate_post_id($param): bool {
+function validate_post_id($param): bool
+{
     return is_numeric($param) && $param > 0;
 }
 
@@ -91,7 +94,8 @@ function internal_get_postmeta(int $post_id)
         ARRAY_A
     );
     $meta_dict = [];
-    foreach ($results as $row) {
+    foreach ($results as $row)
+    {
         $key = $row['meta_key'];
         $value = maybe_unserialize($row['meta_value']);
         $meta_dict[$key] = $value;

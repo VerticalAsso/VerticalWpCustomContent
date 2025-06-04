@@ -1,22 +1,27 @@
 <?php
+
 namespace DbRestAccess\Admin;
 
 // Prevent direct access to the file
-if (!defined('ABSPATH')) {
+if (!defined('ABSPATH'))
+{
     exit;
 }
 
 /**
  * Admin settings data structure
  */
-class Settings {
-    public function __construct() {
+class Settings
+{
+    public function __construct()
+    {
         add_action('admin_menu', [$this, 'add_admin_menu']);
         add_action('admin_init', [$this, 'register_settings']);
     }
 
     // Add the admin page to the menu
-    public function add_admin_menu() {
+    public function add_admin_menu()
+    {
         add_options_page(
             'DB REST Access Settings',
             'DB REST Access',
@@ -27,7 +32,8 @@ class Settings {
     }
 
     // Register plugin settings
-    public function register_settings() {
+    public function register_settings()
+    {
         register_setting('db_rest_access_group', DB_REST_ACCESS_APIKEY_OPT_NAME);
 
         add_settings_section(
@@ -47,8 +53,9 @@ class Settings {
     }
 
     // Render the settings page
-    public function create_admin_page() {
-        ?>
+    public function create_admin_page()
+    {
+?>
         <div class="wrap">
             <h1>DB REST Access Settings</h1>
             <form method="post" action="options.php">
@@ -59,17 +66,18 @@ class Settings {
                 ?>
             </form>
         </div>
-        <?php
+    <?php
     }
 
     // Render the API key input field
-    public function api_key_field_callback() {
+    public function api_key_field_callback()
+    {
         $options = get_option(DB_REST_ACCESS_APIKEY_OPT_NAME);
         $api_key = isset($options['api_key']) ? esc_attr($options['api_key']) : '';
-        ?>
+    ?>
         <input type="text" name="<?php echo DB_REST_ACCESS_APIKEY_OPT_NAME; ?>[api_key]" value="<?php echo $api_key; ?>" class="regular-text">
         <p class="description">Enter the API key for accessing the REST endpoints.</p>
-        <?php
+<?php
     }
 }
 

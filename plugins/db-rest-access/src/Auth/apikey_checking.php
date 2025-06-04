@@ -1,12 +1,14 @@
 <?php
 
 namespace DbRestAccess\Auth;
+
 use WP_REST_Request, WP_Error;
 
 const DB_REST_ACCESS_APIKEY_OPT_NAME = 'dbrest_access_apikey';
 
 // Prevent direct access to the file
-if (!defined('ABSPATH')) {
+if (!defined('ABSPATH'))
+{
     exit;
 }
 
@@ -22,7 +24,8 @@ function verify_api_key(WP_REST_Request $request)
     $stored_api_key = isset($options['api_key']) ? $options['api_key'] : '';
 
     // Reject queries when ApiKey is not there yet
-    if (empty($stored_api_key)) {
+    if (empty($stored_api_key))
+    {
         return new WP_Error(
             'Internal Server Error',
             'Plugin is not yet configured',
@@ -30,7 +33,8 @@ function verify_api_key(WP_REST_Request $request)
         );
     }
 
-    if ($api_key === $stored_api_key) {
+    if ($api_key === $stored_api_key)
+    {
         return true; // Access granted
     }
 

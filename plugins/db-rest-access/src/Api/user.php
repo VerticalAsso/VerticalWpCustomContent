@@ -1,13 +1,15 @@
 <?php
 
 namespace DbRestAccess\Api;
+
 require_once __DIR__ . '/../Auth/apikey_checking.php';
 
 use WP_Error;
 use WP_REST_Request;
 
 // Prevent direct access
-if (! defined('ABSPATH')) {
+if (! defined('ABSPATH'))
+{
     exit;
 }
 
@@ -37,7 +39,8 @@ function register_user_route()
 /**
  * Validate that user_id is a positive integer.
  */
-function validate_user_id($param): bool {
+function validate_user_id($param): bool
+{
     return is_numeric($param) && $param > 0;
 }
 
@@ -59,10 +62,10 @@ function internal_get_user_data(int $user_id)
 {
     global $wpdb;
     $table = $wpdb->prefix . 'users';
-    $sql_request = $wpdb->prepare("SELECT * FROM $table WHERE ID = %d", $user_id );
-    $data = $wpdb->get_results( $sql_request);
+    $sql_request = $wpdb->prepare("SELECT * FROM $table WHERE ID = %d", $user_id);
+    $data = $wpdb->get_results($sql_request);
 
-    if(empty($data))
+    if (empty($data))
     {
         return null;
     }

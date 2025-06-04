@@ -1,13 +1,15 @@
 <?php
 
 namespace DbRestAccess\Api;
+
 require_once __DIR__ . '/../Auth/apikey_checking.php';
 
 
 use WP_REST_Request;
 
 // Prevent direct access
-if (! defined('ABSPATH')) {
+if (! defined('ABSPATH'))
+{
     exit;
 }
 
@@ -34,7 +36,8 @@ function register_events_route()
         'args' => [
             'timeframe' => [
                 'required' => false,
-                'validate_callback' => function ($param) {
+                'validate_callback' => function ($param)
+                {
                     return in_array($param, ['week', 'month', 'year', 'future', 'custom']);
                 }
             ],
@@ -55,7 +58,8 @@ function register_events_route()
             'limit' => [
                 'required' => false,
                 'default'  => 100,
-                'validate_callback' => function ($param) {
+                'validate_callback' => function ($param)
+                {
                     return is_numeric($param) && $param > 0 && $param <= 500;
                 }
             ],
@@ -64,7 +68,8 @@ function register_events_route()
             'offset' => [
                 'required' => false,
                 'default'  => 0,
-                'validate_callback' => function ($param) {
+                'validate_callback' => function ($param)
+                {
                     return is_numeric($param) && $param >= 0;
                 }
             ],
@@ -90,7 +95,8 @@ function get_events_by_timeframe(WP_REST_Request $request)
     $timeframe = $request->get_param('timeframe');
     $now = date('Y-m-d H:i:s');
 
-    switch ($timeframe) {
+    switch ($timeframe)
+    {
         case 'week':
             $start = date('Y-m-d', strtotime('monday this week'));
             $end   = date('Y-m-d', strtotime('sunday this week 23:59:59'));
@@ -123,11 +129,13 @@ function get_events_by_timeframe(WP_REST_Request $request)
         case 'custom':
             $start = $request->get_param('start_date');
             $end   = $request->get_param('end_date');
-            if ($start) {
+            if ($start)
+            {
                 $where .= " AND event_start_date >= %s";
                 $params[] = $start . (strlen($start) == 10 ? ' 00:00:00' : '');
             }
-            if ($end) {
+            if ($end)
+            {
                 $where .= " AND event_start_date <= %s";
                 $params[] = $end . (strlen($end) == 10 ? ' 23:59:59' : '');
             }

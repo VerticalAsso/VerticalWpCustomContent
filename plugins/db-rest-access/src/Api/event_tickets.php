@@ -1,13 +1,15 @@
 <?php
 
 namespace DbRestAccess\Api;
+
 require_once __DIR__ . '/../Auth/apikey_checking.php';
 
 
 use WP_REST_Request;
 
 // Prevent direct access to the file
-if (!defined('ABSPATH')) {
+if (!defined('ABSPATH'))
+{
     exit;
 }
 
@@ -85,10 +87,13 @@ function internal_get_tickets_for_event(int $event_id)
     );
 
     // Unwrap the PHP serialized array so that it'll be easier for consummer code later on to handle it.
-    foreach ($results as &$row) {
-        if (isset($row->ticket_members_roles)) {
+    foreach ($results as &$row)
+    {
+        if (isset($row->ticket_members_roles))
+        {
             $roles = @unserialize($row->ticket_members_roles);
-            if ($roles !== false && is_array($roles)) {
+            if ($roles !== false && is_array($roles))
+            {
                 $row->ticket_members_roles = $roles;
             }
         }
@@ -96,4 +101,3 @@ function internal_get_tickets_for_event(int $event_id)
 
     return $results;
 }
-
