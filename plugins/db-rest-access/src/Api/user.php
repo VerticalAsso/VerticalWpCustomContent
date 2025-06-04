@@ -14,12 +14,18 @@ if (! defined('ABSPATH'))
 }
 
 /**
+ * Registers the /user REST API endpoint for retrieving user data by user ID.
+ *
  * @api {get} /wp-json/dbrest/v1/user Get user data from database
+ * @apiName GetUser
+ * @apiGroup Users
+ * @apiVersion 1.0.0
  *
- * @apiDescription
- * Retrieves user data from vertical database, with minimal modifications for compatibility purposes.
+ * @apiDescription Retrieves user data from the vertical database, with minimal modifications for compatibility purposes.
  *
- * @apiParam {Number} user_id : The ID of the user (required).
+ * @apiParam {Number} user_id The ID of the user (required).
+ *
+ * @return void
  */
 function register_user_route()
 {
@@ -38,6 +44,9 @@ function register_user_route()
 
 /**
  * Validate that user_id is a positive integer.
+ *
+ * @param mixed $param
+ * @return bool
  */
 function validate_user_id($param): bool
 {
@@ -45,7 +54,10 @@ function validate_user_id($param): bool
 }
 
 /**
- * Handles the postmeta REST API endpoint.
+ * Callback for the /user endpoint.
+ *
+ * @param WP_REST_Request $request
+ * @return WP_REST_Response
  */
 function get_user(WP_REST_Request $request)
 {
@@ -56,7 +68,10 @@ function get_user(WP_REST_Request $request)
 }
 
 /**
- * Returns associative array of meta_key => meta_value (unserialized)
+ * Returns user data as an associative array, without exposing sensitive fields.
+ *
+ * @param int $user_id The ID of the user.
+ * @return array|null User data or null if not found.
  */
 function internal_get_user_data(int $user_id)
 {
@@ -70,7 +85,7 @@ function internal_get_user_data(int $user_id)
         return null;
     }
 
-    // Using the first result (there should only be one hit anyway )
+    // Using the first result (there should only be one hit anyway)
     $data = $data[0];
 
     // Dropping the user_pass field, I don't want this to be exposed.

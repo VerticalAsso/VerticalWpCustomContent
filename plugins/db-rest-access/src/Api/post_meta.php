@@ -4,7 +4,6 @@ namespace DbRestAccess\Api;
 
 require_once __DIR__ . '/../Auth/apikey_checking.php';
 
-
 use WP_REST_Request;
 
 // Prevent direct access
@@ -14,36 +13,18 @@ if (! defined('ABSPATH'))
 }
 
 /**
+ * Registers the /postmeta REST API endpoint for retrieving post metadata.
+ *
  * @api {get} /wp-json/dbrest/v1/postmeta Get post metadata
  * @apiName GetPostmeta
  * @apiGroup Posts
+ * @apiVersion 1.0.0
  *
- * @apiDescription
- * Retrieve all postmeta key/value pairs for a specific post (e.g., an event).
+ * @apiDescription Retrieve all postmeta key/value pairs for a specific post by its database ID.
  *
  * @apiParam {Number} post_id The ID of the post (required).
  *
- * @apiSuccess {Object[]} meta List of meta records (each has meta_id, post_id, meta_key, meta_value).
- * @apiSuccess {Number} count Number of meta records returned.
- * @apiSuccess {Number} post_id The post ID requested.
- *
- * @apiExample {curl} Example usage:
- *     curl -X GET "https://yourdomain.com/wp-json/dbrest/v1/postmeta?post_id=456"
- *
- * @apiSuccessExample {json} Success-Response:
- *     HTTP/1.1 200 OK
- *     {
- *         "meta": [
- *             {
- *                 "meta_id": 123,
- *                 "post_id": 456,
- *                 "meta_key": "_thumbnail_id",
- *                 "meta_value": "789"
- *             }
- *         ],
- *         "count": 1,
- *         "post_id": 456
- *     }
+ * @return void
  */
 function register_postmeta_route()
 {
@@ -62,6 +43,9 @@ function register_postmeta_route()
 
 /**
  * Validate that post_id is a positive integer.
+ *
+ * @param mixed $param
+ * @return bool
  */
 function validate_post_id($param): bool
 {
@@ -69,7 +53,10 @@ function validate_post_id($param): bool
 }
 
 /**
- * Handles the postmeta REST API endpoint.
+ * Callback for the /postmeta endpoint.
+ *
+ * @param WP_REST_Request $request
+ * @return WP_REST_Response
  */
 function get_postmeta(WP_REST_Request $request)
 {
@@ -81,6 +68,9 @@ function get_postmeta(WP_REST_Request $request)
 
 /**
  * Returns associative array of meta_key => meta_value (unserialized)
+ *
+ * @param int $post_id The ID of the post.
+ * @return array Associative array of post meta.
  */
 function internal_get_postmeta(int $post_id)
 {

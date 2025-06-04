@@ -14,12 +14,18 @@ if (! defined('ABSPATH'))
 }
 
 /**
- * @api {get} /wp-json/dbrest/v1/user Get user data from database
+ * Registers the /usermeta REST API endpoint for retrieving user metadata by user ID.
  *
- * @apiDescription
- * Retrieves user data from vertical database, with minimal modifications for compatibility purposes.
+ * @api {get} /wp-json/dbrest/v1/usermeta Get user metadata by ID
+ * @apiName GetUserMeta
+ * @apiGroup Users
+ * @apiVersion 1.0.0
  *
- * @apiParam {Number} user_id : The ID of the user (required).
+ * @apiDescription Retrieve selected user meta key/value pairs for a specific user by their database ID.
+ *
+ * @apiParam {Number} user_id The ID of the user (required).
+ *
+ * @return void
  */
 function register_user_metadata_route()
 {
@@ -37,7 +43,10 @@ function register_user_metadata_route()
 }
 
 /**
- * Handles the postmeta REST API endpoint.
+ * Callback for the /usermeta endpoint.
+ *
+ * @param WP_REST_Request $request
+ * @return WP_REST_Response
  */
 function get_user_metadata(WP_REST_Request $request)
 {
@@ -48,9 +57,10 @@ function get_user_metadata(WP_REST_Request $request)
 }
 
 /**
- * Returns a JSON object matching the template structure.
- * For missing keys, sets the value to null.
- * For nested arrays/objects, handles recursion as needed.
+ * Returns a JSON object with selected user meta keys. For missing keys, sets the value to null.
+ *
+ * @param int $user_id The ID of the user.
+ * @return array Associative array of user meta.
  */
 function internal_get_user_metadata(int $user_id)
 {
@@ -60,7 +70,7 @@ function internal_get_user_metadata(int $user_id)
 
     $results = $wpdb->get_results($sql_request, ARRAY_A);
 
-    // The JSON template keys and structures you want to enforce
+    // The JSON template keys and structures to enforce
     $template = [
         "_application_passwords" => null,
         "_um_last_login" => null,
@@ -91,7 +101,7 @@ function internal_get_user_metadata(int $user_id)
         $meta_dict[$key] = $value;
     }
 
-    // Now, build the final array based on the template
+    // Build the final array based on the template
     $output = [];
     foreach ($template as $key => $default)
     {

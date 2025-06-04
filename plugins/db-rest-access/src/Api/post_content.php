@@ -4,7 +4,6 @@ namespace DbRestAccess\Api;
 
 require_once __DIR__ . '/../Auth/apikey_checking.php';
 
-
 use WP_REST_Request;
 
 // Prevent direct access
@@ -14,34 +13,18 @@ if (! defined('ABSPATH'))
 }
 
 /**
+ * Registers the /post REST API endpoint for retrieving post content by ID.
+ *
  * @api {get} /wp-json/dbrest/v1/post Get post content by ID
  * @apiName GetPost
  * @apiGroup Posts
+ * @apiVersion 1.0.0
  *
- * @apiDescription
- * Retrieve all data for a specific post (event, page, etc.) by its database ID.
+ * @apiDescription Retrieve all data for a specific post by its database ID.
  *
  * @apiParam {Number} post_id The ID of the post (required).
  *
- * @apiSuccess {Object} post All columns from the posts table for the given post.
- * @apiSuccess {Number} post_id The post ID requested.
- *
- * @apiExample {curl} Example usage:
- *     curl -X GET "https://yourdomain.com/wp-json/dbrest/v1/post?post_id=17258"
- *
- * @apiSuccessExample {json} Success-Response:
- *     HTTP/1.1 200 OK
- *     {
- *         "post": {
- *             "ID": "17258",
- *             "post_author": "2",
- *             "post_date": "2024-05-01 10:00:00",
- *             "post_content": "...",
- *             "post_title": "Your Post Title",
- *             // ...all other columns
- *         },
- *         "post_id": "17258"
- *     }
+ * @return void
  */
 function register_post_content_route()
 {
@@ -59,7 +42,10 @@ function register_post_content_route()
 }
 
 /**
- * Handles the post content REST API endpoint.
+ * Callback for the /post endpoint.
+ *
+ * @param WP_REST_Request $request
+ * @return WP_REST_Response
  */
 function get_post_content(WP_REST_Request $request)
 {
@@ -69,7 +55,10 @@ function get_post_content(WP_REST_Request $request)
 }
 
 /**
- * Returns post row as associative array, or null
+ * Retrieves the post row as an associative array, or null if not found.
+ *
+ * @param int $post_id The ID of the post.
+ * @return array|null The post data or null.
  */
 function internal_get_post_content(int $post_id)
 {

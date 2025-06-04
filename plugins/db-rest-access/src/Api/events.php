@@ -4,19 +4,15 @@ namespace DbRestAccess\Api;
 
 require_once __DIR__ . '/../Auth/apikey_checking.php';
 
-
 use WP_REST_Request;
-
-// Prevent direct access
-if (! defined('ABSPATH'))
-{
-    exit;
-}
 
 const DATETIME_REGEX = '/^\d{4}-\d{2}-\d{2}/';
 
 /**
  * Used to sanitize input date (end and start) for an event.
+ *
+ * @param string $param
+ * @return bool
  */
 function validate_event_date_param($param)
 {
@@ -24,9 +20,25 @@ function validate_event_date_param($param)
 }
 
 /**
- * Register REST API route for fetching events.
+ * Registers the /events REST API endpoint for fetching events.
+ *
+ * @api {get} /wp-json/dbrest/v1/events Get events
+ * @apiName GetEvents
+ * @apiGroup Events
+ * @apiVersion 1.0.0
+ *
+ * @apiDescription Retrieve events by timeframe or custom date range, with pagination support.
+ *
+ * @apiParam {String="week","month","year","future","custom"} [timeframe] Filter by predefined timeframes.
+ * @apiParam {String} [start_date] The start date (yyyy-mm-dd, required for custom timeframe).
+ * @apiParam {String} [end_date] The end date (yyyy-mm-dd, required for custom timeframe).
+ * @apiParam {Number{1-500}} [limit=100] The maximum number of events to return.
+ * @apiParam {Number} [offset=0] Offset for pagination.
+ *
+ * @apiError (Error 400) InvalidParams Parameters are invalid or missing required values.
+ *
+ * @return void
  */
-
 function register_events_route()
 {
     register_rest_route('dbrest/v1', '/events', [
@@ -42,19 +54,16 @@ function register_events_route()
                 }
             ],
 
-            // Sanitize input start date (should match yyyy-mm-dd)
             'start_date' => [
                 'required' => false,
                 'validate_callback' => __NAMESPACE__ . '\\validate_event_date_param'
             ],
 
-            // Sanitize input end date (should match yyyy-mm-dd)
             'end_date' => [
                 'required' => false,
                 'validate_callback' => __NAMESPACE__ . '\\validate_event_date_param'
             ],
 
-            // Used to limit the amount of returned records
             'limit' => [
                 'required' => false,
                 'default'  => 100,
@@ -64,7 +73,6 @@ function register_events_route()
                 }
             ],
 
-            // Used to perform pagination by the consumer of this API
             'offset' => [
                 'required' => false,
                 'default'  => 0,

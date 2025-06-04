@@ -4,45 +4,23 @@ namespace DbRestAccess\Api;
 
 require_once __DIR__ . '/../Auth/apikey_checking.php';
 
-
 use WP_REST_Request;
 
-// Prevent direct access to the file
-if (!defined('ABSPATH'))
-{
-    exit;
-}
-
 /**
+ * Registers the /event-tickets REST API endpoint for retrieving ticket templates for a specific event.
+ *
  * @api {get} /wp-json/dbrest/v1/event-tickets Get event ticket templates
  * @apiName GetEventTickets
  * @apiGroup Events
+ * @apiVersion 1.0.0
  *
- * @apiDescription
- * Retrieve all ticket templates for a specific event.
+ * @apiDescription Retrieve all ticket templates for a specific event.
  *
  * @apiParam {Number} event_id The ID of the event (required).
  *
- * @apiSuccess {Object[]} tickets List of tickets for the event (may be empty).
- * @apiSuccess {Number} count Number of tickets returned.
- * @apiSuccess {Number} event_id The event ID requested.
+ * @apiError (Error 400) InvalidEventId The event_id parameter is required and must be a positive integer.
  *
- * @apiExample {curl} Example usage:
- *     curl -X GET "https://yourdomain.com/wp-json/dbrest/v1/event-tickets?event_id=123"
- *
- * @apiSuccessExample {json} Success-Response:
- *     HTTP/1.1 200 OK
- *     {
- *         "tickets": [
- *             {
- *                 "ticket_id": 1,
- *                 "event_id": 123,
- *                 "ticket_members_roles": ["role1", "role2"]
- *             }
- *         ],
- *         "count": 1,
- *         "event_id": 123
- *     }
+ * @return void
  */
 function register_event_tickets_route()
 {
@@ -59,9 +37,11 @@ function register_event_tickets_route()
     ]);
 }
 
-
 /**
- * Retrieves event-tickets (meaning the ticket template used by an event to accept bookings)
+ * Retrieves event tickets (the ticket template used by an event to accept bookings).
+ *
+ * @param WP_REST_Request $request The REST request object.
+ * @return WP_REST_Response
  */
 function get_event_tickets(WP_REST_Request $request)
 {
@@ -75,18 +55,22 @@ function get_event_tickets(WP_REST_Request $request)
     ]);
 }
 
-
+/**
+ * Retrieves the ticket templates for a given event.
+ *
+ * @param int $event_id The ID of the event.
+ * @return array Event ticket templates.
+ */
 function internal_get_tickets_for_event(int $event_id)
 {
     global $wpdb;
     $table = $wpdb->prefix . 'em_tickets';
 
-    // Prepare and execute the query safely
     $results = $wpdb->get_results(
         $wpdb->prepare("SELECT * FROM $table WHERE event_id = %d", $event_id)
     );
 
-    // Unwrap the PHP serialized array so that it'll be easier for consummer code later on to handle it.
+    // Unwrap the PHP serialized array for ticket_members_roles if present
     foreach ($results as &$row)
     {
         if (isset($row->ticket_members_roles))

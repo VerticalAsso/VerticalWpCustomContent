@@ -19,7 +19,20 @@ if (! defined('ABSPATH'))
     exit;
 }
 
-
+/**
+ * Registers the /full-event REST API endpoint for retrieving full event details.
+ *
+ * @api {get} /wp-json/dbrest/v1/full-event Get full event details
+ * @apiName GetFullEvent
+ * @apiGroup Events
+ * @apiVersion 1.0.0
+ *
+ * @apiDescription Retrieve extensive event details, including the event's raw data, metadata, card, bookings, comments, and location.
+ *
+ * @apiParam {Number} event_id The ID of the event (required).
+ *
+ * @return void
+ */
 function register_full_event_route()
 {
     register_rest_route('dbrest/v1', '/full-event', [
@@ -38,7 +51,12 @@ function register_full_event_route()
     ]);
 }
 
-// Retrieves all bookings for a given event
+/**
+ * Callback for the /full-event endpoint.
+ *
+ * @param WP_REST_Request $request
+ * @return WP_REST_Response
+ */
 function get_full_event(WP_REST_Request $request)
 {
     global $wpdb;
@@ -49,7 +67,7 @@ function get_full_event(WP_REST_Request $request)
     $post_id = $event_base_data['post_id'];
     $post_metadata = internal_get_postmeta($post_id);
 
-    // Event card already contain informations about thumbnail, title, excerpt, etc.
+    // Event card already contains information about thumbnail, title, excerpt, etc.
     // Reusing it will allow to retrieve valuable data more easily
     $event_card = internal_get_event_card($event_id);
 
@@ -61,15 +79,14 @@ function get_full_event(WP_REST_Request $request)
     $location = internal_get_location($location_id);
 
     $result = [
-        "event_raw" => $event_base_data,
+        "event_raw"      => $event_base_data,
         "event_metadata" => $post_metadata,
-        "event_card" => $event_card,
-        "bookings" => $bookings,
-        "comments" => $comments,
-        "location" => $location,
-        "categories" => "not implemented"
+        "event_card"     => $event_card,
+        "bookings"       => $bookings,
+        "comments"       => $comments,
+        "location"       => $location,
+        "categories"     => "not implemented"
     ];
-
 
     return rest_ensure_response($result);
 }
