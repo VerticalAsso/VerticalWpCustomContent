@@ -15,7 +15,7 @@ services:
     depends_on:
       - db
     volumes:
-      - ./plugins/db-rest-access:/var/www/html/wp-content/plugins/db-rest-access
+      - ./plugins/verticalapp-driver:/var/www/html/wp-content/plugins/verticalapp-driver
 
     # # Uncomment to test the new theme updated for PHP 8
     #   - ./themes/vertical:/var/www/html/wp-content/themes/vertical

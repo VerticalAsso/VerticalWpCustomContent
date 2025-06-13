@@ -1,6 +1,6 @@
 <?php
 
-namespace DbRestAccess\Api;
+namespace VerticalAppDriver\Api;
 
 require_once __DIR__ . '/../Auth/apikey_checking.php';
 
@@ -22,7 +22,7 @@ function validate_event_date_param($param)
 /**
  * Registers the /events REST API endpoint for fetching events.
  *
- * @api {get} /wp-json/dbrest/v1/events Get events
+ * @api {get} /wp-json/vdriver/v1/events Get events
  * @apiName GetEvents
  * @apiGroup Events
  * @apiVersion 1.0.0
@@ -41,10 +41,10 @@ function validate_event_date_param($param)
  */
 function register_events_route()
 {
-    register_rest_route('dbrest/v1', '/events', [
+    register_rest_route('vdriver/v1', '/events', [
         'methods'             => 'GET',
         'callback'            => __NAMESPACE__ . '\\get_events_by_timeframe',
-        'permission_callback' => '\\DbRestAccess\\Auth\\verify_api_key',
+        'permission_callback' => '\\VerticalAppDriver\\Auth\\verify_api_key',
         'args' => [
             'timeframe' => [
                 'required' => false,

@@ -1,6 +1,6 @@
 <?php
 
-namespace DbRestAccess\Api;
+namespace VerticalAppDriver\Api;
 
 require_once __DIR__ . '/../Auth/apikey_checking.php';
 
@@ -16,7 +16,7 @@ if (! defined('ABSPATH'))
 /**
  * Registers the /user REST API endpoint for retrieving user data by user ID.
  *
- * @api {get} /wp-json/dbrest/v1/user Get user data from database
+ * @api {get} /wp-json/vdriver/v1/user Get user data from database
  * @apiName GetUser
  * @apiGroup Users
  * @apiVersion 1.0.0
@@ -29,10 +29,10 @@ if (! defined('ABSPATH'))
  */
 function register_user_route()
 {
-    register_rest_route('dbrest/v1', '/user', [
+    register_rest_route('vdriver/v1', '/user', [
         'methods'             => 'GET',
         'callback'            => __NAMESPACE__ . '\\get_user',
-        'permission_callback' => '\\DbRestAccess\\Auth\\verify_api_key',
+        'permission_callback' => '\\VerticalAppDriver\\Auth\\verify_api_key',
         'args' => [
             'user_id' => [
                 'required' => true,

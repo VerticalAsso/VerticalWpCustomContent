@@ -1,6 +1,6 @@
 <?php
 
-namespace DbRestAccess\Api;
+namespace VerticalAppDriver\Api;
 
 require_once __DIR__ . '/../Auth/apikey_checking.php';
 
@@ -9,7 +9,7 @@ use WP_REST_Request;
 /**
  * Registers the /event-tickets REST API endpoint for retrieving ticket templates for a specific event.
  *
- * @api {get} /wp-json/dbrest/v1/event-tickets Get event ticket templates
+ * @api {get} /wp-json/vdriver/v1/event-tickets Get event ticket templates
  * @apiName GetEventTickets
  * @apiGroup Events
  * @apiVersion 1.0.0
@@ -24,10 +24,10 @@ use WP_REST_Request;
  */
 function register_event_tickets_route()
 {
-    register_rest_route('dbrest/v1', '/event-tickets', [
+    register_rest_route('vdriver/v1', '/event-tickets', [
         'methods' => 'GET',
         'callback' => __NAMESPACE__ . '\\get_event_tickets',
-        'permission_callback' => '\\DbRestAccess\\Auth\\verify_api_key',
+        'permission_callback' => '\\VerticalAppDriver\\Auth\\verify_api_key',
         'args' => [
             'event_id' => [
                 'required' => true,

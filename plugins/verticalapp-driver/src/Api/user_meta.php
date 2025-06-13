@@ -1,6 +1,6 @@
 <?php
 
-namespace DbRestAccess\Api;
+namespace VerticalAppDriver\Api;
 
 require_once __DIR__ . '/../Auth/apikey_checking.php';
 
@@ -16,7 +16,7 @@ if (! defined('ABSPATH'))
 /**
  * Registers the /usermeta REST API endpoint for retrieving user metadata by user ID.
  *
- * @api {get} /wp-json/dbrest/v1/usermeta Get user metadata by ID
+ * @api {get} /wp-json/vdriver/v1/usermeta Get user metadata by ID
  * @apiName GetUserMeta
  * @apiGroup Users
  * @apiVersion 1.0.0
@@ -29,10 +29,10 @@ if (! defined('ABSPATH'))
  */
 function register_user_metadata_route()
 {
-    register_rest_route('dbrest/v1', '/usermeta', [
+    register_rest_route('vdriver/v1', '/usermeta', [
         'methods'             => 'GET',
         'callback'            => __NAMESPACE__ . '\\get_user_metadata',
-        'permission_callback' => '\\DbRestAccess\\Auth\\verify_api_key',
+        'permission_callback' => '\\VerticalAppDriver\\Auth\\verify_api_key',
         'args' => [
             'user_id' => [
                 'required' => true,

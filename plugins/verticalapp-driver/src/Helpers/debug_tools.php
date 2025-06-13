@@ -1,6 +1,6 @@
 <?php
 
-namespace DbRestAccess\Helpers;
+namespace VerticalAppDriver\Helpers;
 
 
 // Prevent direct access to the file

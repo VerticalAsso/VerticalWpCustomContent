@@ -1,6 +1,6 @@
 <?php
 
-namespace DbRestAccess\Api;
+namespace VerticalAppDriver\Api;
 
 require_once __DIR__ . '/../Auth/apikey_checking.php';
 require_once __DIR__ . '/event_bookings.php';
@@ -22,7 +22,7 @@ if (! defined('ABSPATH'))
 /**
  * Registers the /full-event REST API endpoint for retrieving full event details.
  *
- * @api {get} /wp-json/dbrest/v1/full-event Get full event details
+ * @api {get} /wp-json/vdriver/v1/full-event Get full event details
  * @apiName GetFullEvent
  * @apiGroup Events
  * @apiVersion 1.0.0
@@ -35,10 +35,10 @@ if (! defined('ABSPATH'))
  */
 function register_full_event_route()
 {
-    register_rest_route('dbrest/v1', '/full-event', [
+    register_rest_route('vdriver/v1', '/full-event', [
         'methods' => 'GET',
         'callback' => __NAMESPACE__ . '\\get_full_event',
-        'permission_callback' => '\\DbRestAccess\\Auth\\verify_api_key',
+        'permission_callback' => '\\VerticalAppDriver\\Auth\\verify_api_key',
         'args' => [
             'event_id' => [
                 'required' => true,

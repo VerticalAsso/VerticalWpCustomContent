@@ -1,6 +1,6 @@
 <?php
 
-namespace DbRestAccess\Api;
+namespace VerticalAppDriver\Api;
 
 require_once __DIR__ . '/../Auth/apikey_checking.php';
 
@@ -10,7 +10,7 @@ use WP_REST_Request;
 /**
  * Registers the /comments REST API endpoint for retrieving comments by post.
  *
- * @api {get} /wp-json/dbrest/v1/comments Get comments for a post
+ * @api {get} /wp-json/vdriver/v1/comments Get comments for a post
  * @apiName GetComments
  * @apiGroup Comments
  * @apiVersion 1.0.0
@@ -26,10 +26,10 @@ use WP_REST_Request;
  */
 function register_comments_route()
 {
-    register_rest_route('dbrest/v1', '/comments', [
+    register_rest_route('vdriver/v1', '/comments', [
         'methods'             => 'GET',
         'callback'            => __NAMESPACE__ . '\\get_comments',
-        'permission_callback' => '\\DbRestAccess\\Auth\\verify_api_key',
+        'permission_callback' => '\\VerticalAppDriver\\Auth\\verify_api_key',
         'args'                => [
             'post_id' => [
                 'required'          => true,

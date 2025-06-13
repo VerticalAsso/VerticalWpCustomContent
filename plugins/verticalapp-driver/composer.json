@@ -1,10 +1,10 @@
 {
-    "name": "bebenlebricolo/db-rest-access",
+    "name": "bebenlebricolo/verticalapp-driver",
     "type": "library",
     "license": "MIT",
     "autoload": {
         "psr-4": {
-            "DbRestAccess\\": "src/"
+            "VerticalAppDriver\\": "src/"
         }
     },
     "authors": [

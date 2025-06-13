@@ -1,6 +1,6 @@
 <?php
 
-namespace DbRestAccess\Api;
+namespace VerticalAppDriver\Api;
 
 require_once __DIR__ . '/../Auth/apikey_checking.php';
 
@@ -15,7 +15,7 @@ if (! defined('ABSPATH'))
 /**
  * Registers the /postmeta REST API endpoint for retrieving post metadata.
  *
- * @api {get} /wp-json/dbrest/v1/postmeta Get post metadata
+ * @api {get} /wp-json/vdriver/v1/postmeta Get post metadata
  * @apiName GetPostmeta
  * @apiGroup Posts
  * @apiVersion 1.0.0
@@ -28,10 +28,10 @@ if (! defined('ABSPATH'))
  */
 function register_postmeta_route()
 {
-    register_rest_route('dbrest/v1', '/postmeta', [
+    register_rest_route('vdriver/v1', '/postmeta', [
         'methods'             => 'GET',
         'callback'            => __NAMESPACE__ . '\\get_postmeta',
-        'permission_callback' => '\\DbRestAccess\\Auth\\verify_api_key',
+        'permission_callback' => '\\VerticalAppDriver\\Auth\\verify_api_key',
         'args' => [
             'post_id' => [
                 'required' => true,

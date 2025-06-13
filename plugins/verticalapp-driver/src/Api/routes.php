@@ -1,6 +1,6 @@
 <?php
 
-namespace DbRestAccess\Api;
+namespace VerticalAppDriver\Api;
 
 require_once __DIR__ . '/event_bookings.php';
 require_once __DIR__ . '/event_card.php';
@@ -16,7 +16,7 @@ require_once __DIR__ . '/full_event.php';
 
 /**
  * @brief registers all REST API routes upon activation.
- * @see dbrest-access.php for rest api init callback registration
+ * @see verticalapp-driver.php for rest api init callback registration
  */
 function register_all_routes()
 {

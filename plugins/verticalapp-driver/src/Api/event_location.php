@@ -1,6 +1,6 @@
 <?php
 
-namespace DbRestAccess\Api;
+namespace VerticalAppDriver\Api;
 
 require_once __DIR__ . '/../Auth/apikey_checking.php';
 
@@ -10,7 +10,7 @@ use WP_REST_Request;
 /**
  * Registers the /eventlocation REST API endpoint for retrieving event location data.
  *
- * @api {get} /wp-json/dbrest/v1/eventlocation Get event location data
+ * @api {get} /wp-json/vdriver/v1/eventlocation Get event location data
  * @apiName GetEventLocation
  * @apiGroup Locations
  * @apiVersion 1.0.0
@@ -25,10 +25,10 @@ use WP_REST_Request;
  */
 function register_event_location_route()
 {
-    register_rest_route('dbrest/v1', '/eventlocation', [
+    register_rest_route('vdriver/v1', '/eventlocation', [
         'methods'             => 'GET',
         'callback'            => __NAMESPACE__ . '\\get_event_location',
-        'permission_callback' => '\\DbRestAccess\\Auth\\verify_api_key',
+        'permission_callback' => '\\VerticalAppDriver\\Auth\\verify_api_key',
         'args' => [
             'location_id' => [
                 'required' => true,

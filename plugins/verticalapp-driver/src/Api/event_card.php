@@ -1,6 +1,6 @@
 <?php
 
-namespace DbRestAccess\Api;
+namespace VerticalAppDriver\Api;
 
 require_once __DIR__ . '/../Auth/apikey_checking.php';
 
@@ -10,7 +10,7 @@ use WP_Error;
 /**
  * Registers the /event-card REST API endpoint for retrieving event card data.
  *
- * @api {get} /wp-json/dbrest/v1/event-card Get event card data
+ * @api {get} /wp-json/vdriver/v1/event-card Get event card data
  * @apiName GetEventCard
  * @apiGroup Events
  * @apiVersion 1.0.0
@@ -26,10 +26,10 @@ use WP_Error;
  */
 function register_event_card_route()
 {
-    register_rest_route('dbrest/v1', '/event-card', [
+    register_rest_route('vdriver/v1', '/event-card', [
         'methods'             => 'GET',
         'callback'            => __NAMESPACE__ . '\\get_event_card',
-        'permission_callback' => '\\DbRestAccess\\Auth\\verify_api_key',
+        'permission_callback' => '\\VerticalAppDriver\\Auth\\verify_api_key',
         'args' => [
             'event_id' => [
                 'required' => true,

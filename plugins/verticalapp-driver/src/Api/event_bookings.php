@@ -1,6 +1,6 @@
 <?php
 
-namespace DbRestAccess\Api;
+namespace VerticalAppDriver\Api;
 
 require_once __DIR__ . '/../Auth/apikey_checking.php';
 
@@ -9,7 +9,7 @@ use WP_REST_Request;
 /**
  * Registers the /event-bookings REST API endpoint for retrieving bookings for a specific event.
  *
- * @api {get} /wp-json/dbrest/v1/event-bookings Get event bookings
+ * @api {get} /wp-json/vdriver/v1/event-bookings Get event bookings
  * @apiName GetEventBookings
  * @apiGroup Bookings
  * @apiVersion 1.0.0
@@ -27,10 +27,10 @@ use WP_REST_Request;
  */
 function register_event_bookings_route()
 {
-    register_rest_route('dbrest/v1', '/event-bookings', [
+    register_rest_route('vdriver/v1', '/event-bookings', [
         'methods'             => 'GET',
         'callback'            => __NAMESPACE__ . '\\get_event_bookings',
-        'permission_callback' => '\\DbRestAccess\\Auth\\verify_api_key',
+        'permission_callback' => '\\VerticalAppDriver\\Auth\\verify_api_key',
         'args'                => [
             'event_id' => [
                 'required'          => true,
