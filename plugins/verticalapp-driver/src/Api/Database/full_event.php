@@ -1,8 +1,8 @@
 <?php
 
-namespace VerticalAppDriver\Api;
+namespace VerticalAppDriver\Api\Database;
 
-require_once __DIR__ . '/../Auth/apikey_checking.php';
+require_once __DIR__ . '/../../Auth/apikey_checking.php';
 require_once __DIR__ . '/event_bookings.php';
 require_once __DIR__ . '/event_location.php';
 require_once __DIR__ . '/post_content.php';

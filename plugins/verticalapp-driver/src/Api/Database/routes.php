@@ -1,6 +1,6 @@
 <?php
 
-namespace VerticalAppDriver\Api;
+namespace VerticalAppDriver\Api\Database;
 
 require_once __DIR__ . '/event_bookings.php';
 require_once __DIR__ . '/event_card.php';
