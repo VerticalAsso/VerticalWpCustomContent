@@ -59,8 +59,6 @@ function register_full_event_route()
  */
 function get_full_event(WP_REST_Request $request)
 {
-    global $wpdb;
-
     $event_id = $request->get_param('event_id');
 
     $event_base_data = internal_get_single_event_record($event_id);
@@ -71,7 +69,25 @@ function get_full_event(WP_REST_Request $request)
     // Reusing it will allow to retrieve valuable data more easily
     $event_card = internal_get_event_card($event_id);
 
-    $bookings = internal_get_bookings_for_event($event_id);
+    // Extracting raw bookings data
+    $raw_bookings = internal_get_bookings_for_event($event_id);
+    $bookings = [];
+
+    // Unwrap the PHP serialized array so that it'll be easier for consumer code later on to handle it.
+    foreach ($raw_bookings as &$rb)
+    {
+        $user = internal_get_user_data($rb->person_id);
+        $filtered_booking = [
+            "booking_id" => $rb->booking_id,
+            "user" => $user,
+            "spaces" => $rb->booking_spaces,
+            "booking_date" => $rb->booking_date,
+            "booking_status" => $rb->booking_status
+        ];
+
+        array_push($bookings, $filtered_booking);
+    }
+
     $comments = internal_get_comments($post_id);
 
     // categories

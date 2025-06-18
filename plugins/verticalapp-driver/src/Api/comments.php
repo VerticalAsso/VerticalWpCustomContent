@@ -81,6 +81,7 @@ function internal_get_comments(int $post_id)
         $data = [
             "comment_id" => $row['comment_ID'],
             "post_id"    => $row['comment_post_ID'],
+            "content"    => $row['comment_content'],
             "author"     => $row['comment_author'],
             "email"      => $row['comment_author_email'],
             "user_id"    => $row['user_id'],

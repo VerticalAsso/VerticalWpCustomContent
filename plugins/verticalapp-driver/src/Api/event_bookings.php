@@ -82,7 +82,7 @@ function get_event_bookings(WP_REST_Request $request)
  *
  * @param int    $event_id The ID of the event (positive integer).
  * @param string $status   Filter: "all" or "validated" (default: "validated").
- * @return array[] List of bookings (each as an object or associative array).
+ * @return array[stdClass] List of bookings (each as an object or associative array).
  *
  * Each booking contains at least:
  *   - booking_id (int)
