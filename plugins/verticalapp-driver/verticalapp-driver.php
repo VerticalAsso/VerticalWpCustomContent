@@ -5,7 +5,7 @@
  * Description: A plugin to provide REST API routes for querying custom database tables with an API key.
  * It might also be used to write some data within the database itself.
  * This plugin allows to subscribe/unsubscribe from events without having to use WordPress' Ajax (nor cookies) requests.
- * Version: 1.0
+ * Version: 0.1
  * Author: bebenlebricolo (Benoît Tarrade)
  */
 
