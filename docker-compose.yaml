@@ -1,0 +1,43 @@
+services:
+  wordpress:
+    image: vertical-wordpress
+    build:
+      dockerfile: Docker/Wordpress.Dockerfile
+    # The website should be available at http://localhost:8080
+    ports:
+      - "8080:80"
+    environment:
+      WORDPRESS_DB_HOST: db:3306
+      WORDPRESS_DB_USER: test
+      WORDPRESS_DB_PASSWORD: test
+      WORDPRESS_DB_NAME: verticalws34
+      XDEBUG_CONFIG: client_host=localhost # This is for XDebug 3. For XDebug 2, we should use remote_host instead of client_host.
+    depends_on:
+      - db
+    volumes:
+      - ./plugins/verticalapp-driver:/var/www/html/wp-content/plugins/verticalapp-driver
+
+    # # Uncomment to test the new theme updated for PHP 8
+    #   - ./themes/vertical:/var/www/html/wp-content/themes/vertical
+    #   - ./themes/vertical-child:/var/www/html/wp-content/themes/vertical-child
+
+
+
+  db:
+    image: vertical-database
+    build:
+      dockerfile: Docker/MariaDb.Dockerfile
+    # Map an external port 2400 to access with DBeaver
+    ports:
+      - "2400:3306"
+    environment:
+      MARIADB_ROOT_PASSWORD: rootpassword
+      MARIADB_DATABASE: verticalws34
+      MARIADB_USER: test
+      MARIADB_PASSWORD: test
+    volumes:
+      - db_data:/var/lib/mysql
+
+# DB update will persist unless you delete volumes using `docker compose down -v` or `docker volume prune`
+volumes:
+  db_data:

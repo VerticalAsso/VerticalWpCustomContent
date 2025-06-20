@@ -1,4 +1,4 @@
-FROM php:8.2-cli AS base
+FROM php:8.4-cli AS base
 
 # https://www.digitalocean.com/community/tutorials/how-to-install-and-use-composer-on-debian-10
 RUN apt-get update -y

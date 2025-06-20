@@ -1,0 +1,19 @@
+{
+    "name": "bebenlebricolo/verticalapp-driver",
+    "type": "library",
+    "license": "MIT",
+    "autoload": {
+        "psr-4": {
+            "VerticalAppDriver\\": "src/"
+        }
+    },
+    "authors": [
+        {
+            "name": "Benoît Tarrade"
+        }
+    ],
+    "require-dev": {
+        "phpstan/phpstan": "^2.1",
+        "php-stubs/wordpress-stubs": "^6.8"
+    }
+}

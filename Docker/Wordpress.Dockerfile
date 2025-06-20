@@ -1,5 +1,6 @@
 # Start from the official WordPress image
-FROM wordpress:latest AS wordpress-vertical
+# FROM wordpress:latest
+FROM wordpress:6.8.1-php8.4-apache
 
 # Copy your wp-content folder into the image
 COPY BackedUpContent/wp-content     /var/www/html/wp-content
@@ -7,3 +8,22 @@ COPY BackedUpContent/wp-config.php  /var/www/html/wp-config.php
 
 # Set proper permissions (optional but recommended)
 RUN chown -R www-data:www-data /var/www/html/wp-content
+
+# We're going to use this path multile times. So save it in a variable.
+ARG XDEBUG_INI="/usr/local/etc/php/conf.d/xdebug.ini"
+
+# Install AND configure Xdebug
+RUN pecl install xdebug \
+    && docker-php-ext-enable xdebug \
+    && echo "[xdebug]" > $XDEBUG_INI \
+    && echo "xdebug.mode = debug" >> $XDEBUG_INI \
+    && echo "xdebug.start_with_request = yes" >> $XDEBUG_INI \
+    && echo "xdebug.client_port = 9003" >> $XDEBUG_INI \
+    && echo "xdebug.client_host = 'host.docker.internal'" >> $XDEBUG_INI \
+    && echo "xdebug.log = /var/log/xdebug.log" >> $XDEBUG_INI
+
+RUN touch /var/log/xdebug.log && chmod 666 /var/log/xdebug.log
+RUN chown -R www-data:www-data /var/log
+
+RUN curl -sS https://getcomposer.org/installer -o /tmp/composer-setup.php
+RUN php /tmp/composer-setup.php --install-dir=/usr/local/bin --filename=composer
