@@ -184,7 +184,7 @@ function internal_get_events_by_timeframe(EventQuery $query)
             }
             if ($end)
             {
-                $where .= " AND event_start_date <= %s";
+                $where .= " AND event_end_date <= %s";
                 $params[] = $end . (strlen($end) == 10 ? ' 23:59:59' : '');
             }
             break;
@@ -199,16 +199,25 @@ function internal_get_events_by_timeframe(EventQuery $query)
     $limit  = (int) $query->limit ?: 100;
     $offset = (int) $query->offset ?: 0;
 
-    $sql = "SELECT * FROM $table $where ORDER BY event_start_date DESC LIMIT %d OFFSET %d";
-    $params[] = $limit;
-    $params[] = $offset;
+    // Don't limit output in this special case (hence the offset is irrelevant)
+    if($limit == -1)
+    {
+        $sql = "SELECT * FROM $table $where ORDER BY event_start_date DESC";
+    }
+    else
+    {
+        $sql = "SELECT * FROM $table $where ORDER BY event_start_date DESC LIMIT %d OFFSET %d";
+        $params[] = $limit;
+        $params[] = $offset;
+    }
 
     $prepared_sql = $wpdb->prepare($sql, ...$params);
     $results = $wpdb->get_results($prepared_sql);
 
     // Remove LIMIT/OFFSET for count query
     $count_sql = "SELECT COUNT(*) FROM $table $where";
-    $total_events = (int) $wpdb->get_var($wpdb->prepare($count_sql, ...array_slice($params, 0, count($params) - 2)));
+    $prepared_count_sql = $wpdb->prepare($count_sql, ...array_slice($params, 0, 2));
+    $total_events = (int) $wpdb->get_var($prepared_count_sql);
 
     $count        = count($results);
     $total_pages  = ($limit > 0) ? ceil($total_events / $limit) : 1;
