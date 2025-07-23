@@ -136,7 +136,9 @@ function internal_get_events_by_timeframe(EventQuery $query)
     $where = "WHERE event_status = '1'";
     $params = [];
 
-    $now = date('Y-m-d H:i:s');
+    // We cannot compare with hours minutes or seconds as
+    $today = date('Y-m-d');
+    $now_time = date('H:i:s');
 
     switch ($query->timeframe)
     {
@@ -156,6 +158,7 @@ function internal_get_events_by_timeframe(EventQuery $query)
             $params[] = $end . ' 23:59:59';
             break;
 
+        // Not administrative year
         case 'year':
             $start = date('Y-01-01');
             $end   = date('Y-12-31');
@@ -164,9 +167,11 @@ function internal_get_events_by_timeframe(EventQuery $query)
             $params[] = $end . ' 23:59:59';
             break;
 
+        // We want to capture long-standing events
         case 'future':
-            $where .= " AND event_start_date >= %s";
-            $params[] = $now;
+            $where .= " AND event_start_date >= %s OR event_end_date >= %s";
+            $params[] = $today;
+            $params[] = $today;
             break;
 
         case 'custom':
@@ -186,7 +191,7 @@ function internal_get_events_by_timeframe(EventQuery $query)
 
         default:
             $where .= " AND event_start_date >= %s";
-            $params[] = $now;
+            $params[] = $today;
             break;
     }
 

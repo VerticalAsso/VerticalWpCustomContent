@@ -357,6 +357,13 @@ function get_event_cards_by_timeframe(WP_REST_Request $request)
             continue;
         }
 
+        // Skip event that are not published
+        if($event->event_status != "1")
+        {
+            continue;
+        }
+
+
         $card = internal_get_event_card($id);
         array_push($event_cards, $card);
     }
