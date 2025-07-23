@@ -1,8 +1,8 @@
 <?php
 
-namespace VerticalAppDriver\Api\Database;
+namespace VerticalAppDriver\Api\Database\Core;
 
-require_once __DIR__ . '/../../Auth/apikey_checking.php';
+require_once __DIR__ . '/../../../Auth/apikey_checking.php';
 
 use WP_REST_Request;
 
@@ -18,6 +18,29 @@ function validate_event_date_param($param)
 {
     return is_string($param) && preg_match(DATETIME_REGEX, $param);
 }
+
+
+/**
+ * Event query datastructure is used to communicate queries across different stack of code.
+ */
+class EventQuery
+{
+    public $timeframe;
+    public $start_date;
+    public $end_date;
+    public $offset;
+    public $limit;
+
+    public function __construct($timeframe, $start_date, $end_date, $offset, $limit)
+    {
+        $this->timeframe = $timeframe;
+        $this->start_date = $start_date;
+        $this->end_date = $end_date;
+        $this->offset = $offset;
+        $this->limit = $limit;
+    }
+}
+
 
 /**
  * Registers the /events REST API endpoint for fetching events.
@@ -93,17 +116,29 @@ function register_events_route()
  */
 function get_events_by_timeframe(WP_REST_Request $request)
 {
+    // Timeframe logic
+    $query = new EventQuery($request->get_param('timeframe'),
+                            $request->get_param('start_date'),
+                            $request->get_param('end_date'),
+                            $request->get_param('offset'),
+                            $request->get_param('limit'));
+
+    $response = internal_get_events_by_timeframe($query);
+    return rest_ensure_response($response);
+}
+
+
+function internal_get_events_by_timeframe(EventQuery $query)
+{
     global $wpdb;
     $table = $wpdb->prefix . 'em_events';
 
     $where = "WHERE event_status = '1'";
     $params = [];
 
-    // Timeframe logic
-    $timeframe = $request->get_param('timeframe');
     $now = date('Y-m-d H:i:s');
 
-    switch ($timeframe)
+    switch ($query->timeframe)
     {
         case 'week':
             $start = date('Y-m-d', strtotime('monday this week'));
@@ -135,8 +170,8 @@ function get_events_by_timeframe(WP_REST_Request $request)
             break;
 
         case 'custom':
-            $start = $request->get_param('start_date');
-            $end   = $request->get_param('end_date');
+            $start = $query->start_date;
+            $end   = $query->end_date;
             if ($start)
             {
                 $where .= " AND event_start_date >= %s";
@@ -156,8 +191,8 @@ function get_events_by_timeframe(WP_REST_Request $request)
     }
 
     // Pagination
-    $limit  = (int) $request->get_param('limit') ?: 100;
-    $offset = (int) $request->get_param('offset') ?: 0;
+    $limit  = (int) $query->limit ?: 100;
+    $offset = (int) $query->offset ?: 0;
 
     $sql = "SELECT * FROM $table $where ORDER BY event_start_date DESC LIMIT %d OFFSET %d";
     $params[] = $limit;
@@ -182,5 +217,5 @@ function get_events_by_timeframe(WP_REST_Request $request)
         'current_page'  => $current_page,
     ];
 
-    return rest_ensure_response($response);
+    return $response;
 }

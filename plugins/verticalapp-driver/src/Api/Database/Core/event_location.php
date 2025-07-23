@@ -1,8 +1,8 @@
 <?php
 
-namespace VerticalAppDriver\Api\Database;
+namespace VerticalAppDriver\Api\Database\Core;
 
-require_once __DIR__ . '/../../Auth/apikey_checking.php';
+require_once __DIR__ . '/../../../Auth/apikey_checking.php';
 
 use WP_Error;
 use WP_REST_Request;

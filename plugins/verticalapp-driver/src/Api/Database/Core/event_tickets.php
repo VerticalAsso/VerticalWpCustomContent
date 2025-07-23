@@ -1,8 +1,9 @@
 <?php
 
-namespace VerticalAppDriver\Api\Database;
+namespace VerticalAppDriver\Api\Database\Core;
 
-require_once __DIR__ . '/../../Auth/apikey_checking.php';
+require_once __DIR__ . '/../../../Auth/apikey_checking.php';
+require_once __DIR__ . '/arg_validation.php';
 
 use WP_REST_Request;
 
@@ -31,7 +32,7 @@ function register_event_tickets_route()
         'args' => [
             'event_id' => [
                 'required' => true,
-                'validate_callback' => __NAMESPACE__ . '\\validate_event_id',
+                'validate_callback' => 'VerticalAppDriver\\Api\\Database\\Core\\validate_event_id',
             ]
         ]
     ]);
