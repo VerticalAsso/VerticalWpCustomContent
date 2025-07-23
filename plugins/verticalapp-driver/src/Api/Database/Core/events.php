@@ -92,7 +92,7 @@ function register_events_route()
                 'default'  => 100,
                 'validate_callback' => function ($param)
                 {
-                    return is_numeric($param) && $param > 0 && $param <= 500;
+                    return is_numeric($param) && $param >= -1 && $param <= 10000;
                 }
             ],
 
