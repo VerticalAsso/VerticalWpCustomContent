@@ -341,10 +341,10 @@ function get_event_cards_by_timeframe(WP_REST_Request $request)
 {
     // Timeframe logic
     $query = new Core\EventQuery($request->get_param('timeframe'),
-                            $request->get_param('start_date'),
-                            $request->get_param('end_date'),
-                            $request->get_param('offset'),
-                            $request->get_param('limit'));
+                                 $request->get_param('start_date'),
+                                 $request->get_param('end_date'),
+                                 $request->get_param('offset'),
+                                 $request->get_param('limit'));
 
 
     $events_list = Core\internal_get_events_by_timeframe($query);
@@ -370,8 +370,8 @@ function get_event_cards_by_timeframe(WP_REST_Request $request)
 
     $response = [
         'events'        => $event_cards,
-        'count'         => $events_list["count"],
-        'total_events'  => $events_list["total_events"],
+        'count'         => count($event_cards),          // Count represents the number of events that are actually published
+        'total_events'  => $events_list["total_events"], // Total events map the number of events in total (including the ones that were not published)
         'total_pages'   => $events_list["total_pages"],
         'current_page'  => $events_list["current_page"],
     ];
