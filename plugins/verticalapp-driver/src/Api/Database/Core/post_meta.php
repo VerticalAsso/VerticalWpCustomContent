@@ -5,6 +5,7 @@ namespace VerticalAppDriver\Api\Database\Core;
 require_once __DIR__ . '/../../../Auth/apikey_checking.php';
 
 use WP_REST_Request;
+use WP_REST_Response;
 
 // Prevent direct access
 if (! defined('ABSPATH'))
@@ -83,6 +84,11 @@ function internal_get_postmeta(int $post_id)
         ),
         ARRAY_A
     );
+
+    if($results == null)
+    {
+        return new WP_REST_Response("Could not find any metadata record matching requested post_id.", 404);
+    }
 
     // Define keys that should be converted to boolean - some of them sometimes are stored as "1"/"0" strings instead
     // of regular booleans (because of plugins upgrades) and that's causing issues for consumers of this API.

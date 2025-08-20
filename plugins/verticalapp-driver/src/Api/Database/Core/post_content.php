@@ -5,6 +5,7 @@ namespace VerticalAppDriver\Api\Database\Core;
 require_once __DIR__ . '/../../../Auth/apikey_checking.php';
 
 use WP_REST_Request;
+use WP_REST_Response;
 
 // Prevent direct access
 if (! defined('ABSPATH'))
@@ -51,6 +52,12 @@ function get_post_content(WP_REST_Request $request)
 {
     $post_id = $request->get_param('post_id');
     $result = internal_get_post_content($post_id);
+
+    if($result == null)
+    {
+        return new WP_REST_Response("Requested post content does not exist", 404);
+    }
+
     return rest_ensure_response($result);
 }
 

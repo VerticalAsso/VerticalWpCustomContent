@@ -4,8 +4,8 @@ namespace VerticalAppDriver\Api\Database\Core;
 
 require_once __DIR__ . '/../../../Auth/apikey_checking.php';
 
-use WP_Error;
 use WP_REST_Request;
+use WP_REST_Response;
 
 // Prevent direct access
 if (! defined('ABSPATH'))
@@ -53,6 +53,11 @@ function get_user_metadata(WP_REST_Request $request)
     $user_id = $request->get_param('user_id');
 
     $results = internal_get_user_metadata($user_id);
+    if($results == null)
+    {
+        return new WP_REST_Response("Could not find any metadata record matching requested user_id.", 404);
+    }
+
     return rest_ensure_response($results);
 }
 

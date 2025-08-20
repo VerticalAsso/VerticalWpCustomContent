@@ -6,6 +6,7 @@ require_once __DIR__ . '/../../../Auth/apikey_checking.php';
 
 use WP_Error;
 use WP_REST_Request;
+use WP_REST_Response;
 
 /**
  * Registers the /eventlocation REST API endpoint for retrieving event location data.
@@ -63,6 +64,10 @@ function get_event_location(WP_REST_Request $request)
     }
 
     $results = internal_get_location((int)$location_id);
+    if($results == null)
+    {
+        return new WP_REST_Response("Requested event location does not exist", 404);
+    }
     return rest_ensure_response($results);
 }
 

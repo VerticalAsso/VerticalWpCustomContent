@@ -6,6 +6,7 @@ require_once __DIR__ . '/../../../Auth/apikey_checking.php';
 require_once __DIR__ . '/arg_validation.php';
 
 use WP_REST_Request;
+use WP_REST_Response;
 
 /**
  * Registers the /event-tickets REST API endpoint for retrieving ticket templates for a specific event.
@@ -48,6 +49,11 @@ function get_event_tickets(WP_REST_Request $request)
 {
     $event_id = $request->get_param('event_id');
     $results = internal_get_tickets_for_event($event_id);
+
+    if($results == null)
+    {
+        return new WP_REST_Response("Requested event tickets do not exist", 404);
+    }
 
     return rest_ensure_response([
         "tickets" => $results,

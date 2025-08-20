@@ -138,7 +138,7 @@ function internal_get_events_by_timeframe(EventQuery $query)
 
     // We cannot compare with hours minutes or seconds as
     $today = date('Y-m-d');
-    $now_time = date('H:i:s');
+    // $now_time = date('H:i:s');
 
     switch ($query->timeframe)
     {

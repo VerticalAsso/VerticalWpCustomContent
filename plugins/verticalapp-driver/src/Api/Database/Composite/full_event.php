@@ -13,6 +13,8 @@ require_once __DIR__ . '/../Core/comments.php';
 
 use WP_REST_Request;
 use VerticalAppDriver\Api\Database\Core as Core;
+use WP_Error;
+use WP_REST_Response;
 
 // Prevent direct access
 if (! defined('ABSPATH'))
@@ -62,7 +64,13 @@ function get_full_event(WP_REST_Request $request)
 {
     $event_id = $request->get_param('event_id');
 
+    // Can happen as event ids are not contiguous (there are big id jumps between event records )
     $event_base_data = internal_get_single_event_record($event_id);
+    if($event_base_data == null)
+    {
+        return new WP_REST_Response("Requested event Id does not exist", 404);
+    }
+
     $post_id = $event_base_data['post_id'];
     $post_metadata = Core\internal_get_postmeta($post_id);
 

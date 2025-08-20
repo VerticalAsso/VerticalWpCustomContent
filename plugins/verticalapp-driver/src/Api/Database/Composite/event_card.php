@@ -12,6 +12,7 @@ use VerticalAppDriver\Api\Database\Core as Core;
 
 use WP_REST_Request;
 use WP_Error;
+use WP_REST_Response;
 
 /**
  * Registers the /event-card REST API endpoints for retrieving event card data.
@@ -139,6 +140,10 @@ function get_event_card(WP_REST_Request $request)
     }
 
     $result = internal_get_event_card($event_id);
+    if($result == null)
+    {
+        return new WP_REST_Response("Requested event id does not exist", 404);
+    }
     return rest_ensure_response($result);
 }
 
