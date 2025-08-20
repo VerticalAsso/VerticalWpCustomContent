@@ -83,12 +83,71 @@ function internal_get_postmeta(int $post_id)
         ),
         ARRAY_A
     );
-    $meta_dict = [];
-    foreach ($results as $row)
-    {
+
+    // Define keys that should be converted to boolean - some of them sometimes are stored as "1"/"0" strings instead
+    // of regular booleans (because of plugins upgrades) and that's causing issues for consumers of this API.
+    $boolean_keys = [
+        '_um_custom_access_settings',
+        '_um_access_hide_from_queries',
+        '_event_rsvp',
+        '_custom_booking_form',
+        '_event_all_day',
+        '_event_active_status',
+        '_um_restrict_by_custom_message'
+    ];
+
+    // Same idea for known numeric keys that should be treated as Numbers
+    $numeric_keys = [
+        '_event_id',
+        '_event_spaces',
+        '_event_rsvp_spaces',
+        '_thumbnail_id',
+        '_edit_lock',
+        '_edit_last',
+        '_location_id'
+    ];
+
+     $meta_dict = [];
+    foreach ($results as $row) {
         $key = $row['meta_key'];
         $value = maybe_unserialize($row['meta_value']);
-        $meta_dict[$key] = $value;
+
+        // Handle both direct boolean values and nested arrays
+        if(is_array($value))
+        {
+            $meta_dict[$key] = convert_boolean_values($value, $boolean_keys);
+        }
+        else if(in_array($key, $boolean_keys))
+        {
+            $meta_dict[$key] = filter_var($value, FILTER_VALIDATE_BOOLEAN);
+        }
+        else
+        {
+            $meta_dict[$key] = $value;
+        }
     }
     return $meta_dict;
+}
+
+/**
+ * Recursively converts boolean values in arrays
+ *
+ * @param mixed $value The value to convert
+ * @param array $boolean_keys Array of keys that should be treated as booleans
+ * @return mixed The converted value
+ */
+function convert_boolean_values($value, array $boolean_keys)
+{
+    if (is_array($value)) {
+        foreach ($value as $k => $v) {
+            if (in_array($k, $boolean_keys)) {
+                $value[$k] = filter_var($v, FILTER_VALIDATE_BOOLEAN);
+            } elseif (is_array($v)) {
+                $value[$k] = convert_boolean_values($v, $boolean_keys);
+            }
+        }
+        return $value;
+    }
+
+    return $value;
 }
