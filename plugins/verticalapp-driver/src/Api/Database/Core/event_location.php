@@ -78,24 +78,23 @@ function internal_get_location(int $location_id)
     $table = $wpdb->prefix . 'em_locations';
     $sql_request = $wpdb->prepare("SELECT * FROM $table WHERE location_id = %d", $location_id);
 
-    $results = $wpdb->get_results($sql_request, ARRAY_A);
+    $result = $wpdb->get_row($sql_request, ARRAY_A);
 
-    $output = [];
-    foreach ($results as $row)
-    {
-        $data = [
-            "location_id"       => $row['location_id'],
-            "post_id"           => $row['post_id'],
-            "location_slug"     => $row['location_slug'],
-            "location_name"     => $row['location_name'],
-            "location_address"  => $row['location_address'],
-            "location_postcode" => $row['location_postcode'],
-            "location_country"  => $row['location_country'],
-            "location_latitude" => $row['location_latitude'],
-            "location_longitude"=> $row['location_longitude'],
-        ];
-        array_push($output, $data);
+    // Return null if no location found
+    if (!$result) {
+        return null;
     }
 
-    return $output;
+    // Return single location data structure
+    return [
+        "location_id"       => $result['location_id'],
+        "post_id"           => $result['post_id'],
+        "location_slug"     => $result['location_slug'],
+        "location_name"     => $result['location_name'],
+        "location_address"  => $result['location_address'],
+        "location_postcode" => $result['location_postcode'],
+        "location_country"  => $result['location_country'],
+        "location_latitude" => $result['location_latitude'],
+        "location_longitude"=> $result['location_longitude'],
+    ];
 }
