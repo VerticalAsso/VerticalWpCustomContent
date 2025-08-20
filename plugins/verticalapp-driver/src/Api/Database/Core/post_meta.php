@@ -104,50 +104,51 @@ function internal_get_postmeta(int $post_id)
         '_thumbnail_id',
         '_edit_lock',
         '_edit_last',
-        '_location_id'
+        '_location_id',
+        '_um_accessible',
+        '_um_noaccess_action',
+        '_um_access_redirect',
     ];
 
-     $meta_dict = [];
+    $meta_dict = [];
     foreach ($results as $row) {
         $key = $row['meta_key'];
         $value = maybe_unserialize($row['meta_value']);
 
-        // Handle both direct boolean values and nested arrays
-        if(is_array($value))
-        {
-            $meta_dict[$key] = convert_boolean_values($value, $boolean_keys);
-        }
-        else if(in_array($key, $boolean_keys))
-        {
-            $meta_dict[$key] = filter_var($value, FILTER_VALIDATE_BOOLEAN);
-        }
-        else
-        {
-            $meta_dict[$key] = $value;
+        // Handle both direct values and nested arrays
+        if(is_array($value)) {
+            $meta_dict[$key] = convert_types($value, $boolean_keys, $numeric_keys);
+        } else {
+            if(in_array($key, $boolean_keys)) {
+                $meta_dict[$key] = filter_var($value, FILTER_VALIDATE_BOOLEAN);
+            } else if(in_array($key, $numeric_keys)) {
+                $meta_dict[$key] = is_numeric($value) ? (int)$value : $value;
+            } else {
+                $meta_dict[$key] = $value;
+            }
         }
     }
     return $meta_dict;
 }
 
 /**
- * Recursively converts boolean values in arrays
+ * Recursively converts boolean and numeric values in arrays
  *
  * @param mixed $value The value to convert
  * @param array $boolean_keys Array of keys that should be treated as booleans
+ * @param array $numeric_keys Array of keys that should be treated as integers
  * @return mixed The converted value
  */
-function convert_boolean_values($value, array $boolean_keys)
+function convert_types($value, array $boolean_keys, array $numeric_keys)
 {
-    if (is_array($value)) {
-        foreach ($value as $k => $v) {
-            if (in_array($k, $boolean_keys)) {
-                $value[$k] = filter_var($v, FILTER_VALIDATE_BOOLEAN);
-            } elseif (is_array($v)) {
-                $value[$k] = convert_boolean_values($v, $boolean_keys);
-            }
+    foreach ($value as $k => $v) {
+        if (in_array($k, $boolean_keys)) {
+            $value[$k] = filter_var($v, FILTER_VALIDATE_BOOLEAN);
+        } else if (in_array($k, $numeric_keys)) {
+            $value[$k] = is_numeric($v) ? (int)$v : $v;
+        } else if (is_array($v)) {
+            $value[$k] = convert_types($v, $boolean_keys, $numeric_keys);
         }
-        return $value;
     }
-
     return $value;
 }
