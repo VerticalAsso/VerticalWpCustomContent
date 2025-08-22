@@ -27,6 +27,7 @@ use VerticalAppDriver\Api\Database\Core\UserMetadata;
 function register_user_profile_route()
 {
     register_user_profile_by_id_route();
+    register_user_profile_by_email_route();
     register_user_profile_get_picture_by_id();
 }
 
@@ -58,6 +59,39 @@ function register_user_profile_by_id_route()
             'user_id' => [
                 'required' => true,
                 'validate_callback' => 'VerticalAppDriver\\Api\\Database\\Core\\validate_user_id',
+            ]
+        ]
+    ]);
+}
+
+/**
+ * Registers the /user-profile REST API endpoint for retrieving user profile data from their email.
+ * This is a convenience endpoint that first looks up the user ID from the email, then calls the same logic as /user-profile/by-id.
+ *
+ * @api {get} /wp-json/vdriver/v1/user-profile/by-id Get user profile data by user ID
+ * @apiName GetUserProfileById
+ * @apiGroup UserProfile
+ * @apiVersion 1.0.0
+ *
+ * @apiDescription Retrieve the profile data for a user by their ID.
+ *
+ * @apiParam {Number} user_id The ID of the user (required).
+ *
+ * @apiError (Error 400) InvalidUserId The user_id parameter is required and must be a positive integer.
+ * @apiError (Error 404) NotFound No user found for the given user_id.
+ *
+ * @return void
+ */
+function register_user_profile_by_email_route()
+{
+    register_rest_route('vdriver/v1', '/user-profile/by-email', [
+        'methods'             => 'GET',
+        'callback'            => __NAMESPACE__ . '\\get_user_profile_by_email',
+        'permission_callback' => '\\VerticalAppDriver\\Auth\\verify_api_key',
+        'args' => [
+            'email' => [
+                'required' => true,
+                'validate_callback' => 'VerticalAppDriver\\Api\\Database\\Core\\validate_email',
             ]
         ]
     ]);
@@ -176,7 +210,7 @@ class UserProfile
 
 
 /**
- * Callback for the /user-profile endpoint.
+ * Callback for the /user-profile/by-id endpoint.
  *
  * @param WP_REST_Request $request The REST request object.
  * @return WP_REST_Response|WP_Error User profile or error.
@@ -189,6 +223,30 @@ function get_user_profile(WP_REST_Request $request)
         return new WP_Error('invalid_user_id', 'The user_id parameter is required and must be a positive integer.', ['status' => 400]);
     }
 
+    $result = internal_get_user_profile($user_id);
+    if ($result == null)
+    {
+        return new WP_REST_Response("Requested user id does not exist", 404);
+    }
+    return rest_ensure_response($result);
+}
+
+/**
+ * Callback for the /user-profile/by-email endpoint.
+ *
+ * @param WP_REST_Request $request The REST request object.
+ * @return WP_REST_Response|WP_Error User profile or error.
+ */
+function get_user_profile_by_email(WP_REST_Request $request)
+{
+    $email = (string) $request->get_param('email');
+    $user = get_user_by('email', $email);
+    if ($user === false)
+    {
+        return new WP_REST_Response("Could not find any user record matching requested email.", 404);
+    }
+
+    $user_id = (int) $user->ID;
     $result = internal_get_user_profile($user_id);
     if ($result == null)
     {
