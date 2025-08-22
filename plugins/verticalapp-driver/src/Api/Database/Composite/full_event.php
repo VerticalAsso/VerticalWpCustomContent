@@ -1,17 +1,20 @@
 <?php
 
-namespace VerticalAppDriver\Api\Database;
+namespace VerticalAppDriver\Api\Database\Composite;
 
-require_once __DIR__ . '/../../Auth/apikey_checking.php';
-require_once __DIR__ . '/event_bookings.php';
-require_once __DIR__ . '/event_location.php';
-require_once __DIR__ . '/post_content.php';
-require_once __DIR__ . '/post_meta.php';
-require_once __DIR__ . '/user.php';
-require_once __DIR__ . '/user_meta.php';
-require_once __DIR__ . '/comments.php';
+require_once __DIR__ . '/../../../Auth/apikey_checking.php';
+require_once __DIR__ . '/../Core/event_bookings.php';
+require_once __DIR__ . '/../Core/event_location.php';
+require_once __DIR__ . '/../Core/post_content.php';
+require_once __DIR__ . '/../Core/post_meta.php';
+require_once __DIR__ . '/../Core/user.php';
+require_once __DIR__ . '/../Core/user_meta.php';
+require_once __DIR__ . '/../Core/comments.php';
 
 use WP_REST_Request;
+use VerticalAppDriver\Api\Database\Core as Core;
+use WP_Error;
+use WP_REST_Response;
 
 // Prevent direct access
 if (! defined('ABSPATH'))
@@ -61,22 +64,28 @@ function get_full_event(WP_REST_Request $request)
 {
     $event_id = $request->get_param('event_id');
 
+    // Can happen as event ids are not contiguous (there are big id jumps between event records )
     $event_base_data = internal_get_single_event_record($event_id);
+    if($event_base_data == null)
+    {
+        return new WP_REST_Response("Requested event Id does not exist", 404);
+    }
+
     $post_id = $event_base_data['post_id'];
-    $post_metadata = internal_get_postmeta($post_id);
+    $post_metadata = Core\internal_get_postmeta($post_id);
 
     // Event card already contains information about thumbnail, title, excerpt, etc.
     // Reusing it will allow to retrieve valuable data more easily
     $event_card = internal_get_event_card($event_id);
 
     // Extracting raw bookings data
-    $raw_bookings = internal_get_bookings_for_event($event_id);
+    $raw_bookings = Core\internal_get_bookings_for_event($event_id);
     $bookings = [];
 
     // Unwrap the PHP serialized array so that it'll be easier for consumer code later on to handle it.
     foreach ($raw_bookings as &$rb)
     {
-        $user = internal_get_user_data($rb->person_id);
+        $user = Core\internal_get_user_data($rb->person_id);
         $filtered_booking = [
             "booking_id" => $rb->booking_id,
             "user" => $user,
@@ -88,11 +97,11 @@ function get_full_event(WP_REST_Request $request)
         array_push($bookings, $filtered_booking);
     }
 
-    $comments = internal_get_comments($post_id);
+    $comments = Core\internal_get_comments($post_id);
 
     // categories
     $location_id = $event_base_data['location_id'];
-    $location = internal_get_location($location_id);
+    $location = Core\internal_get_location($location_id);
 
     $result = [
         "event_raw"      => $event_base_data,

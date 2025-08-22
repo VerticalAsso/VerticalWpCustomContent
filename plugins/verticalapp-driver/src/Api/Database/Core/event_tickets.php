@@ -1,10 +1,12 @@
 <?php
 
-namespace VerticalAppDriver\Api\Database;
+namespace VerticalAppDriver\Api\Database\Core;
 
-require_once __DIR__ . '/../../Auth/apikey_checking.php';
+require_once __DIR__ . '/../../../Auth/apikey_checking.php';
+require_once __DIR__ . '/arg_validation.php';
 
 use WP_REST_Request;
+use WP_REST_Response;
 
 /**
  * Registers the /event-tickets REST API endpoint for retrieving ticket templates for a specific event.
@@ -31,7 +33,7 @@ function register_event_tickets_route()
         'args' => [
             'event_id' => [
                 'required' => true,
-                'validate_callback' => __NAMESPACE__ . '\\validate_event_id',
+                'validate_callback' => 'VerticalAppDriver\\Api\\Database\\Core\\validate_event_id',
             ]
         ]
     ]);
@@ -47,6 +49,11 @@ function get_event_tickets(WP_REST_Request $request)
 {
     $event_id = $request->get_param('event_id');
     $results = internal_get_tickets_for_event($event_id);
+
+    if($results == null)
+    {
+        return new WP_REST_Response("Requested event tickets do not exist", 404);
+    }
 
     return rest_ensure_response([
         "tickets" => $results,

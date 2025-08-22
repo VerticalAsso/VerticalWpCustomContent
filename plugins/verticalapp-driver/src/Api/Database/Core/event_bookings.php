@@ -1,10 +1,12 @@
 <?php
 
-namespace VerticalAppDriver\Api\Database;
+namespace VerticalAppDriver\Api\Database\Core;
 
-require_once __DIR__ . '/../../Auth/apikey_checking.php';
+require_once __DIR__ . '/../../../Auth/apikey_checking.php';
 
 use WP_REST_Request;
+use WP_REST_Response;
+use WP_Error;
 
 /**
  * Registers the /event-bookings REST API endpoint for retrieving bookings for a specific event.
@@ -61,13 +63,17 @@ function get_event_bookings(WP_REST_Request $request)
     $status   = $request->get_param('status', 'validated');
 
     if (empty($event_id) || !is_numeric($event_id) || $event_id <= 0) {
-        return new \WP_Error('missing_event_id', 'The event_id parameter is required and must be a positive integer.', ['status' => 400]);
+        return new WP_Error('missing_event_id', 'The event_id parameter is required and must be a positive integer.', ['status' => 400]);
     }
     if (!in_array($status, ['validated', 'all'])) {
-        return new \WP_Error('invalid_status', 'The status parameter must be "validated" or "all".', ['status' => 400]);
+        return new WP_Error('invalid_status', 'The status parameter must be "validated" or "all".', ['status' => 400]);
     }
 
     $results = internal_get_bookings_for_event((int)$event_id, $status);
+    if($results == null)
+    {
+        return new WP_REST_Response("Requested event booking does not exist", 404);
+    }
 
     return rest_ensure_response([
         "bookings"      => $results,
