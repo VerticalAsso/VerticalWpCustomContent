@@ -4,6 +4,7 @@ namespace VerticalAppDriver\Api\Database\Core;
 
 require_once __DIR__ . '/../../../Auth/apikey_checking.php';
 
+use DateTime;
 use WP_REST_Request;
 use WP_REST_Response;
 
@@ -72,13 +73,24 @@ function get_user(WP_REST_Request $request)
     return rest_ensure_response($results);
 }
 
+
+class UserData
+{
+    public int $id;
+    public string $user_login;
+    public string $user_nicename;
+    public string $user_email;
+    public string $user_registered;
+    public string $display_name;
+}
+
 /**
  * Returns user data as an associative array, without exposing sensitive fields.
  *
  * @param int $user_id The ID of the user.
- * @return array|null User data or null if not found.
+ * @return UserData|null User data or null if not found.
  */
-function internal_get_user_data(int $user_id)
+function internal_get_user_data(int $user_id) : UserData | null
 {
     global $wpdb;
     $table = $wpdb->prefix . 'users';
@@ -94,18 +106,13 @@ function internal_get_user_data(int $user_id)
     $data = $data[0];
 
     // Dropping the user_pass field, I don't want this to be exposed.
-    $results = [
-        'id' => $data->ID,
-        'user_login' => $data->user_login,
-        'user_nicename' => $data->user_nicename,
-        'user_email' => $data->user_email,
-        //'user_url' => $data->user_url,            // Usually left blank
-        'user_registered' => $data->user_registered,
-        //'user_status' => $data->user_status,      // Always set to 0, seems unused
-        'display_name' => $data->display_name,
-        //'user_adresse' => $data->user_adresse,    // Usually left blank
-        //'user_cp' => $data->user_cp,              // Usually left blank
-        //'user_ville' => $data->user_ville         // Usually left blank
-    ];
-    return $results;
+    $user_data = new UserData();
+    $user_data->id = $data->ID;
+    $user_data->user_login = $data->user_login;
+    $user_data->user_nicename = $data->user_nicename;
+    $user_data->user_email = $data->user_email;
+    $user_data->user_registered = $data->user_registered;
+    $user_data->display_name = $data->display_name;
+
+    return $user_data;
 }

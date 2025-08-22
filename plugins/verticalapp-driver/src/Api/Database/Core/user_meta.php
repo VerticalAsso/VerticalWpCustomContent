@@ -53,7 +53,7 @@ function get_user_metadata(WP_REST_Request $request)
     $user_id = $request->get_param('user_id');
 
     $results = internal_get_user_metadata($user_id);
-    if($results == null)
+    if ($results == null)
     {
         return new WP_REST_Response("Could not find any metadata record matching requested user_id.", 404);
     }
@@ -61,13 +61,36 @@ function get_user_metadata(WP_REST_Request $request)
     return rest_ensure_response($results);
 }
 
+class UserMetadata
+{
+    public ?array $_application_passwords;
+    public ?string $_um_last_login;
+    public ?string $account_status;
+    public ?string $adresse;
+    public ?string $birth_date;
+    public ?string $code_postal;
+    // public ?string $description;
+    public ?string $first_name;
+    public ?string $full_name;
+    public ?string $last_name;
+    public ?string $mobile_number;
+    public ?string $nickname;
+    public ?string $profile_photo;
+    // public ?string $synced_gravatar_hashed_id;
+    public ?array $um_member_directory_data;
+    public ?array $v34a_capabilities;
+    public ?string $v34a_user_level;
+    public ?string $ville;
+}
+
+
 /**
  * Returns a JSON object with selected user meta keys. For missing keys, sets the value to null.
  *
  * @param int $user_id The ID of the user.
- * @return array Associative array of user meta.
+ * @return UserMetadata|null Associative array of user meta.
  */
-function internal_get_user_metadata(int $user_id)
+function internal_get_user_metadata(int $user_id): UserMetadata | null
 {
     global $wpdb;
     $table = $wpdb->prefix . 'usermeta';
@@ -120,5 +143,16 @@ function internal_get_user_metadata(int $user_id)
         }
     }
 
-    return $output;
+    if (empty($results))
+    {
+        return null;
+    }
+
+    $user_metadata = new UserMetadata();
+    foreach ($output as $key => $value)
+    {
+        $user_metadata->$key = $value;
+    }
+
+    return $user_metadata;
 }

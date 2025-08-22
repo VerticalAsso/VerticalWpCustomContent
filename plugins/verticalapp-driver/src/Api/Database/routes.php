@@ -11,8 +11,10 @@ require_once __DIR__ . '/Core/user.php';
 require_once __DIR__ . '/Core/user_meta.php';
 require_once __DIR__ . '/Core/comments.php';
 require_once __DIR__ . '/Core/event_location.php';
+
 require_once __DIR__ . '/Composite/event_card.php';
 require_once __DIR__ . '/Composite/full_event.php';
+require_once __DIR__ . '/Composite/user_profile.php';
 
 use VerticalAppDriver\Api\Database\Core as Core;
 use VerticalAppDriver\Api\Database\Composite as Composite;
@@ -37,4 +39,5 @@ function register_all_routes()
     // Higher level apis (can reconstruct objects)
     Composite\register_event_card_route();
     Composite\register_full_event_route();
+    Composite\register_user_profile_route();
 }
