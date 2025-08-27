@@ -29,7 +29,7 @@ function register_roles_routes()
             'with_meta' => [
                 'required'    => false,
                 'default'     => false,
-                'description' => 'If true, includes Ultimate Member roles meta information (if Ultimate Member plugin is installed)',
+                'description' => 'If true, includes Ultimate Member roles meta information (if Ultimate Member plugin is installed) and WordPress roles capabilities.',
                 'type'        => 'boolean',
             ],
         ],
@@ -40,7 +40,7 @@ function register_roles_routes()
  * Callback for the /roles endpoint.
  *
  * @param WP_REST_Request $request The REST request object.
- * @return WP_REST_Response|WP_Error List of comments or error.
+ * @return WP_REST_Response|WP_Error List of roles or error.
  */
 function get_roles(WP_REST_Request $request)
 {
@@ -48,11 +48,10 @@ function get_roles(WP_REST_Request $request)
     $results = internal_get_roles($with_meta);
     $um_roles = internal_get_ultimate_member_roles($with_meta);
 
-    $output[] = [
+    return rest_ensure_response([
         'wordpress_roles' => $results,
         'ultimate_member_roles' => $um_roles
-    ];
-    return rest_ensure_response($output);
+    ]);
 }
 
 /**
@@ -72,8 +71,6 @@ function internal_get_roles(bool $with_meta = false)
 
     foreach ($wp_roles->roles as $role_key => $role_data)
     {
-        $data =
-
         $output[] = [
             'role_key' => $role_key,
             'name'     => $role_data['name'],
@@ -86,7 +83,8 @@ function internal_get_roles(bool $with_meta = false)
 }
 
 /**
- * Retrieves user roles from the database.
+ * Retrieves Ultimate Member plugins user roles from the database.
+ * @param bool $with_meta Whether to include meta information.
  * @return array List of roles as associative arrays.
  */
 function internal_get_ultimate_member_roles(bool $with_meta = false)
