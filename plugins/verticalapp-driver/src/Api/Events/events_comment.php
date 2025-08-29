@@ -292,6 +292,26 @@ function post_comment_to_event(WP_REST_Request $request)
         return new WP_Error('invalid_event', 'Event not found', array('status' => 404));
     }
 
+    // Enforce maximum comment depth of 3
+    $max_depth = 3;
+    $current_depth = 1;
+    $current_parent = $parent_id;
+    while ($current_parent && $current_depth < $max_depth) {
+        $parent_comment = get_comment($current_parent);
+        if (!$parent_comment) {
+            break;
+        }
+        $current_parent = $parent_comment->comment_parent;
+        $current_depth++;
+    }
+    if ($current_parent && $current_depth >= $max_depth) {
+        return new WP_Error(
+            'max_depth_exceeded',
+            'Maximum comment depth of 3 exceeded.',
+            array('status' => 400)
+        );
+    }
+
     // Validate comment content
     $comment_content = sanitize_textarea_field($comment_content);
 
