@@ -74,6 +74,7 @@ class FullEventResult
 {
     public $event_raw;
     public EventMetadata $event_metadata;
+    public array $em_roles; // Mandatory roles to register to this event (derived from events manager)
     public $event_card;
     public $bookings;
     public $comments;
@@ -111,6 +112,15 @@ function internal_get_full_event(int $event_id) : FullEventResult | WP_REST_Resp
     $raw_bookings = Core\internal_get_bookings_for_event($event_id);
     $bookings = [];
 
+    // Retrieving mandatory roles to register to this event (derived from events manager)
+    // This is a bit hacky, but events manager does not provide a direct way to get this information
+    // So we have to load the event and its tickets to get the roles
+    // Note: this requires events manager to be active and the EM classes to be available
+    // This information can be found in the em_tickets table, column ticket_members_roles
+    $em_event = em_get_event($event_id);
+    $em_tickets = $em_event->get_tickets();
+    $em_roles = $em_tickets->get_first()->members_roles;
+
     // Unwrap the PHP serialized array so that it'll be easier for consumer code later on to handle it.
     foreach ($raw_bookings as &$rb)
     {
@@ -136,6 +146,7 @@ function internal_get_full_event(int $event_id) : FullEventResult | WP_REST_Resp
     $result->event_raw      = $event_base_data;
     $result->event_metadata = $post_metadata;
     $result->event_card     = $event_card;
+    $result->em_roles       = $em_roles;
     $result->bookings       = $bookings;
     $result->comments       = $comments;
     $result->location       = $location;

@@ -11,10 +11,8 @@ use WP_Error;
 use EM_Ticket_Booking;
 use EM_Ticket;
 use EM_Booking;
-use EM_Event;
 
 use VerticalAppDriver\Api\Database\Composite\UserProfile;
-use VerticalAppDriver\Api\Database\Core\EventMetadata;
 use WP_REST_Response;
 
 use function VerticalAppDriver\Api\Database\Composite\internal_get_user_profile;
@@ -89,12 +87,13 @@ function register_user_to_event(WP_REST_Request $request)
     }
 
     // Assert user can register to this event based on their roles
-    $has_required_role = internal_check_user_roles($full_event->event_metadata, $user);
+    $event_tickets = $EM_Event->get_tickets();
+    $has_required_role = internal_check_user_roles($user, $event_tickets);
     if (!$has_required_role)
     {
-        return new WP_Error('insufficient_permissions', 'User does not have the required role to register for this event', array('status' => 403));
+        $required_roles = $event_tickets->get_first()->members_roles;
+        return new WP_Error('insufficient_permissions', 'User does not have the required role to register for this event.', array('status' => 403, 'required_roles' => $required_roles));
     }
-
 
     // Reject if the user is already booked
     if ($EM_Event->get_bookings()->has_booking($user_id))
@@ -162,29 +161,30 @@ function register_user_to_event(WP_REST_Request $request)
 
 /**
  * @brief Verifies if a user has the required roles to register for an event.
- * @param EventMetadata $postmetadata The event's post metadata containing access restrictions.
  * @param UserProfile $profile The user's profile containing their roles.
  * @return bool True if the user has at least one of the required roles, false otherwise.
  * If no specific roles are required, returns true.
  */
-function internal_check_user_roles(EventMetadata $postmetadata, UserProfile $profile): bool
+function internal_check_user_roles(UserProfile $profile, \EM_Tickets | null $tickets ): bool
 {
-    // Retrieve required roles from the event's custom field (if set)
-    $um_restrictions = $postmetadata->um_content_restrictions ?? null;
+    // Check ticket-specific role restrictions (if any)
+    // Tickets can have their own role restrictions, which should be considered in addition to event-level
     $required_roles = [];
-    if ($um_restrictions && $um_restrictions->custom_access_settings)
+    if( $tickets != null )
     {
-        foreach ($um_restrictions->access_roles as $role)
+        $ticket = $tickets->get_first();
+        if( $ticket instanceof EM_Ticket )
         {
-            if ($role->allowed)
+            $ticket_restrictions = $ticket->members_roles;
+            if( is_array($ticket_restrictions) && count($ticket_restrictions) > 0 )
             {
-                $required_roles[] = $role->role_name;
+                $required_roles = array_merge($required_roles, $ticket_restrictions);
             }
         }
     }
 
-    $has_required_role = false;
     // Check roles for this user
+    $has_required_role = false;
     if (empty($required_roles))
     {
         // No specific role required, allow registration
