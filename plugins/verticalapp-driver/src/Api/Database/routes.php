@@ -17,6 +17,7 @@ require_once __DIR__ . '/Composite/event_card.php';
 require_once __DIR__ . '/Composite/full_event.php';
 require_once __DIR__ . '/Composite/user_profile.php';
 
+
 use VerticalAppDriver\Api\Database\Core as Core;
 use VerticalAppDriver\Api\Database\Composite as Composite;
 
