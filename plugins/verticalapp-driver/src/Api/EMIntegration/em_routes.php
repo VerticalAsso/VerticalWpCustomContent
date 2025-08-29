@@ -2,9 +2,9 @@
 
 namespace VerticalAppDriver\Api\EMIntegration;
 
-use WP_REST_Request;
-use WP_Error;
-use EM_Ticket_Booking;
+require_once __DIR__ . '/em_event_registration.php';
+
+use VerticalAppDriver\Api\EMIntegration as EMIntegration;
 
 /**
  * @brief registers all REST API routes upon activation.
@@ -12,8 +12,9 @@ use EM_Ticket_Booking;
  */
 function register_all_routes()
 {
-    //
+    EMIntegration\register_em_registration_routes();
 }
+
 
 // Will need further research
 

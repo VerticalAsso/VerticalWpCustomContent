@@ -182,7 +182,7 @@ function internal_get_event_card(int $event_id) : ?WpEventCard
 
     $post_id = (int) $event_record['post_id'];
     $post_metadata = Core\internal_get_postmeta($post_id);
-    $thumbnail_id = isset($post_metadata['_thumbnail_id']) ? (int) $post_metadata['_thumbnail_id'] : null;
+    $thumbnail_id = isset($post_metadata->misc_meta['_thumbnail_id']) ? (int) $post_metadata->misc_meta['_thumbnail_id'] : null;
 
     // Happens with half-cleared database
     if($thumbnail_id == null)
