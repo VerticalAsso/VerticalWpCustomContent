@@ -16,12 +16,14 @@ require_once __DIR__ . '/vendor/autoload.php';
 require_once __DIR__ . '/src/constants.php'; // adjust path if needed
 require_once __DIR__ . '/src/Api/Database/routes.php';
 require_once __DIR__ . '/src/Api/EMIntegration/em_routes.php';
+require_once __DIR__ . '/src/Api/Events/events_routes.php';
 require_once __DIR__ . '/src/Helpers/debug_tools.php';
 require_once __DIR__ . '/src/Admin/Settings.php';
 
 // Register event route (and any others)
 add_action('rest_api_init', 'VerticalAppDriver\Api\Database\register_all_routes');
 add_action('rest_api_init', 'VerticalAppDriver\Api\EMIntegration\register_all_routes');
+add_action('rest_api_init', 'VerticalAppDriver\Api\Events\register_all_routes');
 
 // Activation hook: Set default settings
 register_activation_hook(__FILE__, function ()
