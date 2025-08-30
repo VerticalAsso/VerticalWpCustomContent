@@ -233,3 +233,21 @@ function internal_get_events_by_timeframe(EventQuery $query)
 
     return $response;
 }
+
+
+/**
+ * Returns one event row as associative array, or null if not found.
+ *
+ * @param int $event_id
+ * @return array|null
+ */
+function internal_get_single_event_record(int $event_id)
+{
+    global $wpdb;
+    $table = $wpdb->prefix . 'em_events';
+    $event = $wpdb->get_row(
+        $wpdb->prepare("SELECT * FROM $table WHERE event_id = %d", $event_id),
+        ARRAY_A
+    );
+    return $event ?: null;
+}

@@ -7,6 +7,7 @@ require_once __DIR__ . '/../../../Auth/apikey_checking.php';
 // Required to use internal events retrieval functions
 require_once __DIR__ . '/../Core/events.php';
 require_once __DIR__ . '/../Core/arg_validation.php';
+require_once __DIR__ . '/../Core/event_categories.php';
 
 use VerticalAppDriver\Api\Database\Core as Core;
 
@@ -163,6 +164,7 @@ class WpEventCard
     public $post_id;
     public $spans_weekend;
     public $whole_day;
+    public $categories;
 }
 
 /**
@@ -174,7 +176,7 @@ class WpEventCard
  */
 function internal_get_event_card(int $event_id) : ?WpEventCard
 {
-    $event_record = internal_get_single_event_record($event_id);
+    $event_record = Core\internal_get_single_event_record($event_id);
 
     if (!$event_record || !isset($event_record['post_id'])) {
         return null;
@@ -258,6 +260,10 @@ function internal_get_event_card(int $event_id) : ?WpEventCard
     $event_card->post_id = $post_id;
     $event_card->spans_weekend = $spans_weekend;
     $event_card->whole_day = $whole_day;
+    $event_card->categories = Core\internal_get_event_categories_raw_db($event_id);
+
+    // Works just as well, but is less efficient (2 additional queries instead of 1)
+    // $event_card->categories = Core\internal_get_event_categories_events_manager($event_id);
 
     return $event_card;
 }
@@ -276,22 +282,6 @@ function internal_get_event_booking_count(int $event_id)
     return (int) $wpdb->get_var($sql);
 }
 
-/**
- * Returns one event row as associative array, or null if not found.
- *
- * @param int $event_id
- * @return array|null
- */
-function internal_get_single_event_record(int $event_id)
-{
-    global $wpdb;
-    $table = $wpdb->prefix . 'em_events';
-    $event = $wpdb->get_row(
-        $wpdb->prepare("SELECT * FROM $table WHERE event_id = %d", $event_id),
-        ARRAY_A
-    );
-    return $event ?: null;
-}
 
 /**
  * Retrieves event's thumbnail from database.
@@ -311,9 +301,6 @@ function internal_get_event_thumbnail(int $thumbnail_id)
 
     return $thumbnail_source;
 }
-
-
-
 
 
 // #########################################################################################################################
