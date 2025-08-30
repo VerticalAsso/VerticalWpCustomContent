@@ -89,7 +89,7 @@ class FullEventResult
 function internal_get_full_event(int $event_id) : FullEventResult | WP_REST_Response
 {
     // Can happen as event ids are not contiguous (there are big id jumps between event records )
-    $event_base_data = internal_get_single_event_record($event_id);
+    $event_base_data = Core\internal_get_single_event_record($event_id);
     if($event_base_data == null)
     {
         return new WP_REST_Response("Requested event Id does not exist", 404);
