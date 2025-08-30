@@ -7,6 +7,7 @@ require_once __DIR__ . '/../../../Auth/apikey_checking.php';
 // Required to use internal events retrieval functions
 require_once __DIR__ . '/../Core/events.php';
 require_once __DIR__ . '/../Core/arg_validation.php';
+require_once __DIR__ . '/../Core/internal_event_categories.php';
 
 use VerticalAppDriver\Api\Database\Core as Core;
 
@@ -163,6 +164,7 @@ class WpEventCard
     public $post_id;
     public $spans_weekend;
     public $whole_day;
+    public $categories;
 }
 
 /**
@@ -258,6 +260,7 @@ function internal_get_event_card(int $event_id) : ?WpEventCard
     $event_card->post_id = $post_id;
     $event_card->spans_weekend = $spans_weekend;
     $event_card->whole_day = $whole_day;
+    $event_card->categories = Core\internal_get_event_categories_events_manager($event_id);
 
     return $event_card;
 }

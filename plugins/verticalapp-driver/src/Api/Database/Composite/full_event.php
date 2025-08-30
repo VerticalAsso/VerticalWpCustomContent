@@ -14,7 +14,6 @@ require_once __DIR__ . '/../Core/comments.php';
 use WP_REST_Request;
 use VerticalAppDriver\Api\Database\Core as Core;
 use VerticalAppDriver\Api\Database\Core\EventMetadata;
-use WP_Error;
 use WP_REST_Response;
 
 // Prevent direct access
@@ -79,7 +78,6 @@ class FullEventResult
     public $bookings;
     public $comments;
     public $location;
-    public $categories; // Not implemented yet
 }
 
 /**
@@ -117,6 +115,7 @@ function internal_get_full_event(int $event_id) : FullEventResult | WP_REST_Resp
     // So we have to load the event and its tickets to get the roles
     // Note: this requires events manager to be active and the EM classes to be available
     // This information can be found in the em_tickets table, column ticket_members_roles
+    /** @var \EM_Event $em_event*/
     $em_event = em_get_event($event_id);
     $em_tickets = $em_event->get_tickets();
     $em_roles = $em_tickets->get_first()->members_roles;
@@ -150,7 +149,6 @@ function internal_get_full_event(int $event_id) : FullEventResult | WP_REST_Resp
     $result->bookings       = $bookings;
     $result->comments       = $comments;
     $result->location       = $location;
-    $result->categories     = "not implemented";
 
     return $result;
 }
